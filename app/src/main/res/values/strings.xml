@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Dashboard_and_Security_Module</string>
+
+
+    <!-- Dashboard  -->
+    <string name="get_started">Get Started</string>
+    <string name="welcome">Welcome to MyApp</string>
+    <string name="welcome_subtitle">Your all-in-one app for convenience and security</string>
+
+    <!-- Login Screen -->
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="dont_have_account">Don\'t have an account? Sign Up</string>
+    <string name="btn_login">Login</string>
+
+    <!-- Sign Up Screen -->
+    <string name="sign_up">Sign Up</string>
+    <string name="full_name">Full Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="btn_sign_up">Sign Up</string>
+    <string name="already_have_account">Already have an account? Login</string>
+    <string name="emailNotExist">Email Not Exist</string>
+    <string name="passwordMismatch">Password does not matched</string>
+
+    <!-- DashBoard   -->
+    <string name="friend">Friend</string>
+    <string name="location">Location</string>
+    <string name="safety">Safety</string>
+    <string name="profile">Profile</string>
+
+</resources>
