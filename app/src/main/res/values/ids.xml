@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="submit_code_button" type="id" />
+    <item name="code_input" type="id" />
+    <item name="friends_list" type="id" />
+    <item name="invitation_code_display" type="id" />
+    <item name="btn_generate_code" type="id" />
+</resources>

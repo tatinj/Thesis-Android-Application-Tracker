@@ -1,7 +1,11 @@
 package com.example.dashboard_and_security_module
 
+import android.Manifest
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.ImageButton
@@ -10,20 +14,26 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import android.app.Activity
+import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import com.google.firebase.firestore.DocumentSnapshot
 
 class Login : AppCompatActivity() {
 
-
-
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
+    private val db = FirebaseFirestore.getInstance()
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,11 +62,6 @@ class Login : AppCompatActivity() {
         val tvRegister: TextView = findViewById(R.id.register)
         val googleSignInButton: ImageButton = findViewById(R.id.google_btn)
 
-        fun showToast(message: String) {
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        }
-
-        // Handle normal login (email/password)
         btnLogin.setOnClickListener {
             val email = emailField.text?.toString()?.trim() ?: ""
             val password = passwordField.text?.toString()?.trim() ?: ""
@@ -66,75 +71,135 @@ class Login : AppCompatActivity() {
                 !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> showToast("Invalid email format")
                 password.isEmpty() -> showToast("Password cannot be empty")
                 password.length < 6 -> showToast("Password must be at least 6 characters")
-                else -> {
-                    // Check if the email is registered
-                    auth.fetchSignInMethodsForEmail(email).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val signInMethods = task.result?.signInMethods
-                            if (signInMethods.isNullOrEmpty()) {
-                                showToast("Email is not registered")
-                            } else {
-                                // Proceed with authentication
-                                auth.signInWithEmailAndPassword(email, password)
-                                    .addOnCompleteListener(this) { authTask ->
-                                        if (authTask.isSuccessful) {
-                                            val intent = Intent(this, LocationActivity::class.java)
-                                            startActivity(intent)
-                                        } else {
-                                            showToast("Authentication failed: ${authTask.exception?.message}")
-                                        }
-                                    }
-                            }
-                        } else {
-                            showToast("Error checking email: ${task.exception?.message}")
-                        }
-                    }
-                }
+                else -> loginUser(email, password)
             }
         }
 
-        // Forgot Password functionality
-        tvForgotPassword.setOnClickListener {
-            // Implement forgot password functionality
-            showToast("Forgot Password clicked")
-        }
-
-        // Redirect to registration screen
         tvRegister.setOnClickListener {
             val intent = Intent(this, registration::class.java)
             startActivity(intent)
         }
 
-        // Google Sign-In
         googleSignInButton.setOnClickListener {
             signInWithGoogle()
         }
     }
 
-    // Google Sign-In Method
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun getCurrentDateTime(): Map<String, Any> {
+        val currentTime = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val formattedDate = dateFormat.format(Date(currentTime))
+        return mapOf(
+            "timestamps " to currentTime,
+            "LoginDate" to formattedDate
+        )
+    }
+
+    private fun loginUser(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { authTask ->
+                if (authTask.isSuccessful) {
+                    val user = auth.currentUser
+                    if (user != null) {
+                        // Fetch user's name from Firestore
+                        val userRef = db.collection("users").document(user.uid)
+
+                        // Retrieve the user's name from Firestore
+                        userRef.get().addOnSuccessListener { document ->
+                            if (document.exists()) {
+                                val userName = document.getString("name") ?: "User"
+
+                                // Pass the user's name to the ProfileActivity
+                                val intent = Intent(this, ProfileActivity::class.java)
+                                intent.putExtra("user_name", userName)  // Add user name to intent
+                                startActivity(intent)
+                                finish()  // Close the login activity after successful login
+                            } else {
+                                Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show()
+                            }
+                        }.addOnFailureListener { e ->
+                            Toast.makeText(this, "Failed to retrieve user data: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    showToast("Authentication failed: ${authTask.exception?.message}")
+                }
+            }
+    }
+
     private fun signInWithGoogle() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))  // Use the actual Google Client ID here
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
 
         val googleSignInClient = GoogleSignIn.getClient(this, gso)
-        val signInIntent = googleSignInClient.signInIntent
-        googleSignInLauncher.launch(signInIntent)
+        googleSignInLauncher.launch(googleSignInClient.signInIntent)
     }
 
-    // Firebase Authentication with Google
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
-                val user = auth.currentUser  // Retrieve the current user
-                Toast.makeText(this, "Signed in as ${user?.displayName}", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, LocationActivity::class.java))
-                finish()
+                val user = auth.currentUser
+                if (user != null) {
+                    val loginHistoryRef = db.collection("users").document(user.uid).collection("history")
+                    loginHistoryRef.add(getCurrentDateTime())
+                        .addOnSuccessListener {
+                            showToast("Google login successful")
+                            proceedToLocationActivity()
+                        }
+                        .addOnFailureListener { e ->
+                            showToast("Google login successful (time not recorded)")
+                            proceedToLocationActivity()
+                        }
+                }
             } else {
-                Toast.makeText(this, "Authentication failed", Toast.LENGTH_SHORT).show()
+                showToast("Google authentication failed")
             }
         }
+    }
+
+    private fun checkLocationPermissionAndProceed() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            proceedToLocationActivity()
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            LOCATION_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showToast("Location permission granted")
+                } else {
+                    showToast("Location permission denied - using default location")
+                }
+                proceedToLocationActivity()
+            }
+        }
+    }
+
+    private fun proceedToLocationActivity() {
+        startActivity(Intent(this, LocationActivity::class.java))
+        finish()
     }
 }

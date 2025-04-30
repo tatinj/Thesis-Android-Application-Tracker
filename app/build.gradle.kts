@@ -37,27 +37,28 @@ android {
 }
 
 dependencies {
+    implementation(platform(libs.firebase.bom)) // Firebase BoM (always declare first)
 
-    dependencies {
-        implementation(libs.androidx.core.ktx)
-        implementation(libs.androidx.appcompat)
-        implementation(libs.material)
-        implementation(libs.androidx.activity)
-        implementation(libs.androidx.constraintlayout)
+    // Firebase dependencies (BoM automatically assigns latest version)
+    implementation(libs.google.firebase.auth.ktx)
+    implementation(libs.google.firebase.auth)
+    implementation(libs.google.firebase.firestore)
 
-        // Firebase BoM (always declare first)
-        implementation(platform("com.google.firebase:firebase-bom:31.5.0"))
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
 
-        // Firebase dependencies (BoM automatically assigns latest version)
-        implementation("com.google.firebase:firebase-auth-ktx")
+    // Google Sign-In
+    implementation(libs.play.services.auth)
+    implementation(libs.gms.play.services.location)
 
-        // Google Sign-In
-        implementation("com.google.android.gms:play-services-auth:20.5.0")
+    // Testing Dependencies
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 
-        // Testing Dependencies
-        testImplementation(libs.junit)
-        androidTestImplementation(libs.androidx.junit)
-        androidTestImplementation(libs.androidx.espresso.core)
-    }
-
+    // Map Dependencies
+    implementation(libs.osmdroid.android)
 }

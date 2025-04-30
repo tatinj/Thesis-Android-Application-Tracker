@@ -1,5 +1,7 @@
 package com.example.dashboard_and_security_module
 
+
+
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -26,6 +28,13 @@ class ProfileActivity : AppCompatActivity() {
 
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_profile)
+
+        // Retrieve the user_name from the Intent
+        val userName = intent.getStringExtra("user_name") ?: "User"
+
+        // Set the username to the TextView
+        val tvProfileName: TextView = findViewById(R.id.tv_profile_name)
+        tvProfileName.text = userName  // Set the username here
 
         auth = FirebaseAuth.getInstance()
 

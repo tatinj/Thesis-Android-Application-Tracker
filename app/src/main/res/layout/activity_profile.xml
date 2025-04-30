@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -26,24 +27,6 @@
         android:textColor="@color/green_900"
         android:textSize="18sp"
         android:background="@color/white"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Welcome To"
-        android:textColor="@color/white"
-        android:textSize="45dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="300dp"
-        android:layout_marginTop="40dp"
-        android:gravity="center"
-        android:text="Profile"
-        android:textColor="@color/green_900"
-        android:textSize="50sp"
-        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/profile"
@@ -54,11 +37,26 @@
         android:src="@drawable/user_person_profile_avatar_icon_190943"
         android:contentDescription="Profile Logo"/>
 
+    <TextView
+        android:id="@+id/tv_profile_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile"
+        android:gravity="center"
+        android:text="User Name"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:padding="8dp"
+        android:background="@drawable/rounded_corner_background" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@id/profile"
+        android:layout_below="@id/tv_profile_name"
         android:gravity="center"
         android:layout_marginTop="16dp">
 
@@ -112,7 +110,7 @@
             android:layout_height="80dp"
             android:layout_weight="1"
             android:src="@drawable/direction_gps_location_map_maps_navigation_pin_icon_123206"
-            android:contentDescription="Friend"
+            android:contentDescription="Location"
             android:padding="12dp"
             android:background="@drawable/rounded_button"
             android:gravity="center"
@@ -126,7 +124,7 @@
             android:layout_height="80dp"
             android:layout_weight="1"
             android:src="@drawable/provensafety_5137"
-            android:contentDescription="Friend"
+            android:contentDescription="Safety"
             android:padding="12dp"
             android:background="@drawable/rounded_button"
             android:gravity="center"
@@ -140,7 +138,7 @@
             android:layout_height="80dp"
             android:layout_weight="1"
             android:src="@drawable/user_person_profile_avatar_icon_190943"
-            android:contentDescription="Friend"
+            android:contentDescription="Profile"
             android:padding="12dp"
             android:background="@drawable/rounded_button"
             android:gravity="center"

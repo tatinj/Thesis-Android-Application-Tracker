@@ -1,5 +1,6 @@
 package com.example.dashboard_and_security_module
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
@@ -17,6 +18,7 @@ class MembersActivity : AppCompatActivity() {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_members)
 
+        fetchUserUniqueCode()
 
         val locationSection: ImageView = findViewById(R.id.location_section)
         val safetySection: ImageView = findViewById(R.id.safety_section)
@@ -41,5 +43,8 @@ class MembersActivity : AppCompatActivity() {
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
         }
-        }
     }
+
+    private fun fetchUserUniqueCode(){}
+
+}

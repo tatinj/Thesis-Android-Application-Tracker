@@ -1,4 +1,6 @@
 package com.example.dashboard_and_security_module
+
+
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -13,12 +15,23 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import android.text.Editable
 import android.text.TextWatcher
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 
 class registration : AppCompatActivity() {
+
+    private val db = FirebaseFirestore.getInstance()  // Firestore instance
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration)
 
+        auth = FirebaseAuth.getInstance()
+
+        val emailField: EditText = findViewById(R.id.email)
+        val nameField: EditText = findViewById(R.id.name)
         val passwordField: EditText = findViewById(R.id.password)
         val confirmPasswordField: EditText = findViewById(R.id.confirm_password)
         val btnSignUp: Button = findViewById(R.id.btn_sign_up)
@@ -34,10 +47,8 @@ class registration : AppCompatActivity() {
 
         // TextWatcher for contact number
         phoneNumberField.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val input = s.toString()
                 if (input.length != 11) {
@@ -50,9 +61,7 @@ class registration : AppCompatActivity() {
 
         passwordField.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
             override fun afterTextChanged(s: Editable?) {
                 val input = s.toString()
                 val errors = mutableListOf<String>()
@@ -87,26 +96,50 @@ class registration : AppCompatActivity() {
             }
         })
 
-
-
-
-
         // Set click listener for Sign Up button
         btnSignUp.setOnClickListener {
+            val email = emailField.text.toString()
+            val name = nameField.text.toString()
             val password = passwordField.text.toString()
             val confirmPassword = confirmPasswordField.text.toString()
             val phoneNum = phoneNumberField.text.toString()
 
-            if (password.isEmpty() && phoneNum.isEmpty()) {
-                showToast(getString(R.string.password))
-                showToast("Phone number must contain only digits")
+            if (email.isEmpty() || name.isEmpty() || password.isEmpty() || phoneNum.isEmpty()) {
+                showToast("All fields are required")
             } else if (confirmPassword.isEmpty()) {
                 showToast(getString(R.string.confirm_password))
             } else if (password != confirmPassword) {
                 showToast(getString(R.string.passwordMismatch))
             } else {
-                val intent = Intent(this, LocationActivity::class.java)
-                startActivity(intent)
+                // Create a new user with email and password
+                auth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            val currentUser = auth.currentUser
+                            if (currentUser != null) {
+                                // Store user data in Firestore
+                                val userMap = hashMapOf(
+                                    "email" to email,
+                                    "name" to name,
+                                    "phone" to phoneNum,
+                                    "password" to password
+                                )
+                                db.collection("users").document(currentUser.uid).set(userMap)
+                                    .addOnSuccessListener {
+                                        showToast("Registration successful")
+                                        val intent = Intent(this, LocationActivity::class.java)
+                                        startActivity(intent)
+                                    }
+                                    .addOnFailureListener { e ->
+                                        showToast("Failed to register: ${e.message}")
+                                    }
+                            } else {
+                                showToast("User not authenticated")
+                            }
+                        } else {
+                            showToast("Authentication failed: ${task.exception?.message}")
+                        }
+                    }
             }
         }
 
