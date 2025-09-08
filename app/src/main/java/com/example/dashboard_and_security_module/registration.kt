@@ -1,27 +1,23 @@
 package com.example.dashboard_and_security_module
 
-
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import android.text.Editable
-import android.text.TextWatcher
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 
 class registration : AppCompatActivity() {
 
-    private val db = FirebaseFirestore.getInstance()  // Firestore instance
+    private val db = FirebaseFirestore.getInstance()
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,13 +35,12 @@ class registration : AppCompatActivity() {
         val phoneNumberField: TextInputEditText = findViewById(R.id.phone_num)
         val contactNumberLayout: TextInputLayout = findViewById(R.id.contact_number_layout)
         val passwordLayout: TextInputLayout = findViewById(R.id.password_layout)
+        val checkboxTerms: CheckBox = findViewById(R.id.checkbox_terms)
 
-        // Utility function to show a toast notification
         fun showToast(message: String) {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
 
-        // TextWatcher for contact number
         phoneNumberField.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -54,7 +49,7 @@ class registration : AppCompatActivity() {
                 if (input.length != 11) {
                     contactNumberLayout.error = "-Contact number must be 11 digits"
                 } else {
-                    contactNumberLayout.error = null // Clear the error
+                    contactNumberLayout.error = null
                 }
             }
         })
@@ -66,72 +61,88 @@ class registration : AppCompatActivity() {
                 val input = s.toString()
                 val errors = mutableListOf<String>()
 
-                // password length (8-12 characters)
                 if (input.length < 8 || input.length > 12) {
                     errors.add("- Password must be 8-12 characters long")
                 }
-
-                // at least one uppercase letter
                 if (!input.any { it.isUpperCase() }) {
                     errors.add("- Include at least one uppercase letter")
                 }
-
-                // at least one lowercase letter
                 if (!input.any { it.isLowerCase() }) {
                     errors.add("- Include at least one lowercase letter")
                 }
-
-                // at least one number
                 if (!input.any { it.isDigit() }) {
                     errors.add("- Include at least one number")
                 }
-
-                // at least one special character
                 if (!input.any { it in "@#\$%^&+=!" }) {
                     errors.add("- Include at least one special character (@#\$%^&+=!)")
                 }
 
-                // Set all errors at the same time
                 passwordLayout.error = if (errors.isNotEmpty()) errors.joinToString("\n") else null
             }
         })
 
-        // Set click listener for Sign Up button
         btnSignUp.setOnClickListener {
-            val email = emailField.text.toString()
-            val name = nameField.text.toString()
+            val email = emailField.text.toString().trim()
+            val name = nameField.text.toString().trim()
             val password = passwordField.text.toString()
             val confirmPassword = confirmPasswordField.text.toString()
-            val phoneNum = phoneNumberField.text.toString()
+            val phoneNum = phoneNumberField.text.toString().trim()
+
+            if (!checkboxTerms.isChecked) {
+                showToast("You must agree to the Terms & Privacy Policy")
+                return@setOnClickListener
+            }
 
             if (email.isEmpty() || name.isEmpty() || password.isEmpty() || phoneNum.isEmpty()) {
                 showToast("All fields are required")
             } else if (confirmPassword.isEmpty()) {
-                showToast(getString(R.string.confirm_password))
+                showToast("Please confirm your password")
             } else if (password != confirmPassword) {
-                showToast(getString(R.string.passwordMismatch))
+                showToast("Passwords do not match")
             } else {
-                // Create a new user with email and password
                 auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             val currentUser = auth.currentUser
                             if (currentUser != null) {
-                                // Store user data in Firestore
+                                val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+                                var inviteCode = sharedPref.getString("invite_code", null)
+
+                                if (inviteCode == null) {
+                                    inviteCode = generateUniqueCode()
+                                    sharedPref.edit().putString("invite_code", inviteCode).apply()
+                                }
+
                                 val userMap = hashMapOf(
                                     "email" to email,
                                     "name" to name,
                                     "phone" to phoneNum,
-                                    "password" to password
+
                                 )
+
                                 db.collection("users").document(currentUser.uid).set(userMap)
                                     .addOnSuccessListener {
-                                        showToast("Registration successful")
-                                        val intent = Intent(this, LocationActivity::class.java)
-                                        startActivity(intent)
+                                        showToast("User data saved")
                                     }
                                     .addOnFailureListener { e ->
                                         showToast("Failed to register: ${e.message}")
+                                    }
+
+// Always save invite code to Firestore under meta
+                                val inviteRef = db.collection("users")
+                                    .document(currentUser.uid)
+                                    .collection("meta")
+                                    .document("inviteCode")
+
+                                inviteRef.set(mapOf("code" to inviteCode))
+                                    .addOnSuccessListener {
+                                        showToast("Registration successful\nInvite Code: $inviteCode")
+                                        val intent = Intent(this, LocationActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        showToast("Failed to save invite code: ${e.message}")
                                     }
                             } else {
                                 showToast("User not authenticated")
@@ -143,15 +154,15 @@ class registration : AppCompatActivity() {
             }
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
         tvLogin.setOnClickListener {
             val intent = Intent(this, Login::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun generateUniqueCode(): String {
+        return List(6) {
+            (('A'..'Z') + ('0'..'9')).random()
+        }.joinToString("")
     }
 }

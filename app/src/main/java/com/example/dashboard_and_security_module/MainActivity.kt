@@ -1,28 +1,50 @@
 package com.example.dashboard_and_security_module
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Window
-import android.view.WindowManager
-
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_main)
 
-
-        // Initialize the Get Started button and set its listener
         val btnGetStarted: Button = findViewById(R.id.btn_get_started)
+
         btnGetStarted.setOnClickListener {
-            // Redirect to the Login Activity when the button is clicked
-            val intent = Intent(this, Login::class.java)
-            startActivity(intent)
+            val offlinePrefs = getSharedPreferences("OfflineLogin", MODE_PRIVATE)
+            val loggedInBefore = offlinePrefs.getBoolean("logged_in_before", false)
+
+            if (isInternetAvailable()) {
+                // ✅ Online flow: go to Login normally
+                startActivity(Intent(this, Login::class.java))
+            } else {
+                // ✅ Offline flow
+                if (loggedInBefore) {
+                    // User has logged in before → skip login
+                    startActivity(Intent(this, LocationActivity::class.java))
+                } else {
+                    // User never logged in before
+                    Toast.makeText(
+                        this,
+                        "No internet connection. Please connect to log in.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
+    }
+
+    private fun isInternetAvailable(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = cm.activeNetworkInfo
+        return activeNetwork != null && activeNetwork.isConnected
     }
 }

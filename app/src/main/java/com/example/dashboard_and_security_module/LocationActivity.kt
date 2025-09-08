@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
@@ -34,6 +33,9 @@ class LocationActivity : AppCompatActivity() {
     private lateinit var locationRequest: LocationRequest
     private lateinit var settingsClient: SettingsClient
     private val db = FirebaseFirestore.getInstance()
+
+    // Flag to track if location is already fetched
+    private var isLocationFetched = false
 
     private companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1001
@@ -69,8 +71,8 @@ class LocationActivity : AppCompatActivity() {
         settingsClient = LocationServices.getSettingsClient(this)
 
         locationRequest = LocationRequest.create().apply {
-            interval = 10000
-            fastestInterval = 5000
+            interval = 10000 // 10 seconds
+            fastestInterval = 5000 // 5 seconds
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
     }
@@ -103,7 +105,9 @@ class LocationActivity : AppCompatActivity() {
 
         settingsClient.checkLocationSettings(builder.build())
             .addOnSuccessListener {
-                getCurrentLocation()
+                if (!isLocationFetched) {
+                    getCurrentLocation()
+                }
             }
             .addOnFailureListener { exception ->
                 if (exception is ResolvableApiException) {
@@ -127,6 +131,7 @@ class LocationActivity : AppCompatActivity() {
                         GeoPoint(location.latitude, location.longitude),
                         "Your Location"
                     )
+                    isLocationFetched = true
                 } else {
                     requestNewLocation()
                 }
@@ -150,6 +155,7 @@ class LocationActivity : AppCompatActivity() {
                             "Your Location"
                         )
                         fusedLocationClient.removeLocationUpdates(this)
+                        isLocationFetched = true
                     }
                 }
             },
@@ -157,7 +163,7 @@ class LocationActivity : AppCompatActivity() {
         )
     }
 
-    private fun storeLocationInFirebase(location: Location) {
+    private fun storeLocationInFirebase(location: android.location.Location) {
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             // Get the current timestamp

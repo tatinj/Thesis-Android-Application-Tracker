@@ -1,6 +1,6 @@
+
 package com.example.dashboard_and_security_module
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,8 +14,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -26,9 +24,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.google.firebase.firestore.DocumentSnapshot
 
 class Login : AppCompatActivity() {
+
+    companion object {
+        private const val PREFS_NAME = "MyAppPrefs"
+        private const val FRIENDS_KEY = "friends_list"
+    }
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
@@ -76,8 +78,7 @@ class Login : AppCompatActivity() {
         }
 
         tvRegister.setOnClickListener {
-            val intent = Intent(this, registration::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, registration::class.java))
         }
 
         googleSignInButton.setOnClickListener {
@@ -94,7 +95,7 @@ class Login : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val formattedDate = dateFormat.format(Date(currentTime))
         return mapOf(
-            "timestamps " to currentTime,
+            "timestamps" to currentTime,
             "LoginDate" to formattedDate
         )
     }
@@ -105,24 +106,38 @@ class Login : AppCompatActivity() {
                 if (authTask.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null) {
-                        // Fetch user's name from Firestore
-                        val userRef = db.collection("users").document(user.uid)
+                        val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+                        var inviteCode = sharedPref.getString("invite_code", null)
 
-                        // Retrieve the user's name from Firestore
+                        if (inviteCode == null) {
+                            inviteCode = generateUniqueCode()
+                            sharedPref.edit().putString("invite_code", inviteCode).apply()
+
+                            val inviteRef = db.collection("users").document(user.uid)
+                                .collection("meta").document("inviteCode")
+                            inviteRef.set(mapOf("code" to inviteCode))
+                        }
+
+                        val userRef = db.collection("users").document(user.uid)
                         userRef.get().addOnSuccessListener { document ->
                             if (document.exists()) {
                                 val userName = document.getString("name") ?: "User"
 
-                                // Pass the user's name to the ProfileActivity
+                                // ✅ Save for offline login
+                                val offlinePrefs = getSharedPreferences("OfflineLogin", MODE_PRIVATE)
+                                offlinePrefs.edit()
+                                    .putBoolean("logged_in_before", true)
+                                    .putString("user_id", user.uid)
+                                    .putString("user_name", userName)
+                                    .apply()
+
                                 val intent = Intent(this, ProfileActivity::class.java)
-                                intent.putExtra("user_name", userName)  // Add user name to intent
+                                intent.putExtra("user_name", userName)
                                 startActivity(intent)
-                                finish()  // Close the login activity after successful login
+                                finish()
                             } else {
-                                Toast.makeText(this, "User data not found", Toast.LENGTH_SHORT).show()
+                                showToast("User data not found")
                             }
-                        }.addOnFailureListener { e ->
-                            Toast.makeText(this, "Failed to retrieve user data: ${e.message}", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } else {
@@ -147,13 +162,33 @@ class Login : AppCompatActivity() {
             if (task.isSuccessful) {
                 val user = auth.currentUser
                 if (user != null) {
+                    val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+                    var inviteCode = sharedPref.getString("invite_code", null)
+
+                    if (inviteCode == null) {
+                        inviteCode = generateUniqueCode()
+                        sharedPref.edit().putString("invite_code", inviteCode).apply()
+
+                        val inviteRef = db.collection("users").document(user.uid)
+                            .collection("meta").document("inviteCode")
+                        inviteRef.set(mapOf("code" to inviteCode))
+                            .addOnSuccessListener {
+                                Log.d("InviteCode", "Invite code saved successfully")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("InviteCode", "Failed to save invite code: ${e.message}")
+                            }
+                    } else {
+                        Log.d("Cache", "Using cached invite code: $inviteCode")
+                    }
+
                     val loginHistoryRef = db.collection("users").document(user.uid).collection("history")
                     loginHistoryRef.add(getCurrentDateTime())
                         .addOnSuccessListener {
                             showToast("Google login successful")
                             proceedToLocationActivity()
                         }
-                        .addOnFailureListener { e ->
+                        .addOnFailureListener {
                             showToast("Google login successful (time not recorded)")
                             proceedToLocationActivity()
                         }
@@ -164,42 +199,30 @@ class Login : AppCompatActivity() {
         }
     }
 
-    private fun checkLocationPermissionAndProceed() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            proceedToLocationActivity()
-        } else {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-        }
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            LOCATION_PERMISSION_REQUEST_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    showToast("Location permission granted")
-                } else {
-                    showToast("Location permission denied - using default location")
-                }
-                proceedToLocationActivity()
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showToast("Location permission granted")
+            } else {
+                showToast("Location permission denied - using default location")
             }
+            proceedToLocationActivity()
         }
     }
 
     private fun proceedToLocationActivity() {
         startActivity(Intent(this, LocationActivity::class.java))
         finish()
+    }
+
+    private fun generateUniqueCode(): String {
+        return List(6) {
+            (('A'..'Z') + ('0'..'9')).random()
+        }.joinToString("")
     }
 }

@@ -39,7 +39,7 @@ android {
 dependencies {
     implementation(platform(libs.firebase.bom)) // Firebase BoM (always declare first)
 
-    // Firebase dependencies (BoM automatically assigns latest version)
+    // Firebase dependencies
     implementation(libs.google.firebase.auth.ktx)
     implementation(libs.google.firebase.auth)
     implementation(libs.google.firebase.firestore)
@@ -61,4 +61,7 @@ dependencies {
 
     // Map Dependencies
     implementation(libs.osmdroid.android)
+
+    // ✅ Gson for JSON serialization/deserialization
+    implementation(libs.gson)
 }
