@@ -2,13 +2,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions -->
+    <!-- 🌐 Device Features -->
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
+    <!-- 📍 Location & Network Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- 📩 SMS Permissions -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
+    <!-- 🔔 Notifications (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- ⚡ Optional: Request ignoring battery optimization -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
         android:allowBackup="true"
@@ -21,37 +37,55 @@
         android:theme="@style/Theme.Material3.Light.NoActionBar"
         tools:targetApi="31">
 
-        <!-- Firebase Initialization -->
+        <!-- 🔥 Firebase Initialization -->
         <meta-data
             android:name="com.google.firebase.database"
             android:value="true" />
 
-        <!-- Google Maps API Key (Replace YOUR_GOOGLE_MAPS_API_KEY) -->
+        <!-- 🗺️ Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="YOUR_GOOGLE_MAPS_API_KEY" />
 
-        <!-- Activities -->
+        <!-- 📲 SMS Receiver (works even if app is closed) -->
+        <receiver
+            android:name=".SmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 🧭 App Activities -->
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".SafetyActivity" android:exported="false" />
         <activity android:name=".LocationActivity" android:exported="false" />
         <activity android:name=".MembersActivity" android:exported="false" />
         <activity android:name=".MainDashboard" android:exported="false" />
-        <activity android:name=".FirestoreTestActivity" android:exported="false" />
-        <activity android:name=".registration"
+
+        <!-- 👤 Registration & Login -->
+        <activity
+            android:name=".registration"
             android:exported="false"
             android:theme="@style/Theme.Material3.Light.NoActionBar" />
-        <activity android:name=".Login"
+
+        <activity
+            android:name=".Login"
             android:exported="true"
             android:theme="@style/Theme.Material3.Light.NoActionBar" />
 
-        <!-- Launcher Activity -->
-        <activity android:name=".MainActivity"
+        <!-- 🚀 Launcher Activity -->
+        <activity
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
+
 </manifest>

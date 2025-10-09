@@ -82,13 +82,23 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun signOut() {
+        // 1. Firebase sign out
         auth.signOut()
+
+        // 2. Google sign out
         googleSignInClient.signOut().addOnCompleteListener(this) {
+            // 3. Clear offline login cache
+            val offlinePrefs = getSharedPreferences("OfflineLogin", MODE_PRIVATE)
+            offlinePrefs.edit().clear().apply()
+
             Toast.makeText(this, "Signed out successfully", Toast.LENGTH_SHORT).show()
+
+            // 4. Redirect back to Login screen
             val intent = Intent(this, Login::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }
     }
+
 }

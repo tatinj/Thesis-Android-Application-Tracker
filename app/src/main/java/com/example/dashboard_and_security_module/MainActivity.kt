@@ -16,28 +16,37 @@ class MainActivity : AppCompatActivity() {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_main)
 
+        val offlinePrefs = getSharedPreferences("OfflineLogin", MODE_PRIVATE)
+        val loggedInBefore = offlinePrefs.getBoolean("logged_in_before", false)
+
+        // ✅ Internet check #1: OnCreate (auto-redirect if logged in before)
+        if (loggedInBefore) {
+            if (isInternetAvailable()) {
+                // User has internet & already logged in → go straight to LocationActivity
+                startActivity(Intent(this, LocationActivity::class.java))
+            } else {
+                // No internet but logged in before → still allow offline access
+                startActivity(Intent(this, LocationActivity::class.java))
+            }
+            finish()
+            return
+        }
+
+        // ✅ Otherwise show Get Started button (for first-time login)
         val btnGetStarted: Button = findViewById(R.id.btn_get_started)
 
         btnGetStarted.setOnClickListener {
-            val offlinePrefs = getSharedPreferences("OfflineLogin", MODE_PRIVATE)
-            val loggedInBefore = offlinePrefs.getBoolean("logged_in_before", false)
-
+            // ✅ Internet check #2: Every button click
             if (isInternetAvailable()) {
-                // ✅ Online flow: go to Login normally
+                // Go to Login if internet is available
                 startActivity(Intent(this, Login::class.java))
             } else {
-                // ✅ Offline flow
-                if (loggedInBefore) {
-                    // User has logged in before → skip login
-                    startActivity(Intent(this, LocationActivity::class.java))
-                } else {
-                    // User never logged in before
-                    Toast.makeText(
-                        this,
-                        "No internet connection. Please connect to log in.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                // Block first-time users without internet
+                Toast.makeText(
+                    this,
+                    "No internet connection. Please connect to log in.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
