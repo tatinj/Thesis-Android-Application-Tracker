@@ -1,15 +1,14 @@
 package com.example.dashboard_and_security_module
 
-
-
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Window
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.view.Window
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -34,10 +33,11 @@ class ProfileActivity : AppCompatActivity() {
 
         // Set the username to the TextView
         val tvProfileName: TextView = findViewById(R.id.tv_profile_name)
-        tvProfileName.text = userName  // Set the username here
+        tvProfileName.text = userName
 
         auth = FirebaseAuth.getInstance()
 
+        // Configure Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -45,6 +45,7 @@ class ProfileActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        // Section buttons
         val friendSection: ImageView = findViewById(R.id.friend_section)
         val locationSection: ImageView = findViewById(R.id.location_section)
         val safetySection: ImageView = findViewById(R.id.safety_section)
@@ -64,12 +65,13 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Logout button
         val btnLogout: Button = findViewById(R.id.btn_log_out)
         btnLogout.setOnClickListener {
             signOut()
         }
 
-        // Set date and time
+        // Display date and time
         val tvDate: TextView = findViewById(R.id.tv_date)
         val tvTime: TextView = findViewById(R.id.tv_time)
 
@@ -81,6 +83,7 @@ class ProfileActivity : AppCompatActivity() {
         tvTime.text = timeFormat.format(currentDate)
     }
 
+    /** 🚪 Sign out of Firebase & Google, then stop all ongoing notifications */
     private fun signOut() {
         // 1. Firebase sign out
         auth.signOut()
@@ -91,14 +94,17 @@ class ProfileActivity : AppCompatActivity() {
             val offlinePrefs = getSharedPreferences("OfflineLogin", MODE_PRIVATE)
             offlinePrefs.edit().clear().apply()
 
+            // 4. Cancel ongoing "Listening for SMS" notification from LocationActivity
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancelAll() // Removes all active app notifications
+
             Toast.makeText(this, "Signed out successfully", Toast.LENGTH_SHORT).show()
 
-            // 4. Redirect back to Login screen
+            // 5. Redirect to Login activity
             val intent = Intent(this, Login::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }
     }
-
 }

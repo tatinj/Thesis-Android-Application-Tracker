@@ -257,7 +257,7 @@ class MembersActivity : AppCompatActivity() {
             }
     }
 
-    // 🔹 Get location document and show it as address
+    // 🔹 Get location document and show it as address + map option
     private fun getFriendLastLocation(friendId: String) {
         val history = db.collection("users").document(friendId).collection("history")
         history.orderBy("location.timestamp", Query.Direction.DESCENDING)
@@ -269,17 +269,57 @@ class MembersActivity : AppCompatActivity() {
                     val map = doc.get("location") as? Map<*, *>
                     val lat = map?.get("latitude") as? Double
                     val lon = map?.get("longitude") as? Double
+
                     if (lat != null && lon != null) {
-                        val geo = Geocoder(this, Locale.getDefault())
-                        val addr = geo.getFromLocation(lat, lon, 1)
-                        val loc = addr?.firstOrNull()?.getAddressLine(0)
-                        Toast.makeText(this, "Friend at: $loc", Toast.LENGTH_LONG).show()
+                        db.collection("users").document(friendId).get()
+                            .addOnSuccessListener { userDoc ->
+                                val friendName = userDoc.getString("name") ?: "Friend"
+
+                                // 🟢 Use Geocoder to get exact location name
+                                val geocoder = Geocoder(this, Locale.getDefault())
+                                var addressName = "Unknown location"
+                                try {
+                                    val addresses = geocoder.getFromLocation(lat, lon, 1)
+                                    if (!addresses.isNullOrEmpty()) {
+                                        addressName = addresses[0].getAddressLine(0)
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+
+                                // 🟢 Create popup dialog with full info
+                                AlertDialog.Builder(this)
+                                    .setTitle("📍 Location Found")
+                                    .setMessage(
+                                        "Friend: $friendName\n\n" +
+                                                "Latitude: $lat\nLongitude: $lon\n\n" +
+                                                "Exact Location: $addressName"
+                                    )
+                                    .setPositiveButton("Go to Map") { _, _ ->
+                                        // ✅ Open map activity with data
+                                        val intent = Intent(this, LocationActivity::class.java)
+                                        intent.putExtra("friend_lat", lat)
+                                        intent.putExtra("friend_lon", lon)
+                                        intent.putExtra("friend_name", friendName)
+                                        intent.putExtra("friend_address", addressName)
+                                        startActivity(intent)
+                                    }
+                                    .setNegativeButton("Cancel", null)
+                                    .show()
+                            }
+                    } else {
+                        Toast.makeText(this, "No valid location found", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     Toast.makeText(this, "No location found", Toast.LENGTH_SHORT).show()
                 }
             }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error fetching location", Toast.LENGTH_SHORT).show()
+            }
     }
+
+
 
     // 🔹 Add a friend by their invite code and notify them
     private fun addFriend(friendCode: String) {

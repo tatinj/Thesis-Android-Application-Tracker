@@ -34,23 +34,24 @@
         android:gravity="center"/>
 
     <!-- Button to add a friend by code -->
+
+    <!-- RecyclerView to show list of friends with 'Add Friend' button beside each member -->
     <Button
         android:id="@+id/btn_add_friend"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Friend"
-        android:textColor="@color/white"
-        android:background="@drawable/rounded_button"
         android:layout_below="@id/et_friend_code"
         android:layout_marginLeft="100dp"
+        android:layout_marginTop="34dp"
         android:layout_marginRight="100dp"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="100dp"
+        android:background="@drawable/rounded_button"
+        android:gravity="center"
         android:padding="12dp"
-        android:textSize="18sp"
-        android:gravity="center"/>
+        android:text="Add Friend"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
 
-    <!-- RecyclerView to show list of friends with 'Add Friend' button beside each member -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_friends"
         android:layout_width="match_parent"
