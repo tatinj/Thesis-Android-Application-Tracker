@@ -327,43 +327,58 @@ class MembersActivity : AppCompatActivity() {
         val cachedUserCode = loadUserCodeFromCache()
         val activeUserCode = if (userCode.isNotEmpty()) userCode else cachedUserCode
 
-        db.collection("users").get()
-            .addOnSuccessListener { users ->
-                for (user in users) {
-                    db.collection("users").document(user.id)
-                        .collection("meta").document("inviteCode")
-                        .get()
-                        .addOnSuccessListener { invite ->
-                            val code = invite.getString("code")
-                            if (code == friendCode) {
-                                val name = user.getString("name") ?: "Unknown"
-                                val phone = user.getString("phone") ?: "No phone"
-                                val friend = Friend(name, code, phone)
+        // 🔸 Check if already in friendList
+        if (friendList.any { it.code == friendCode }) {
+            Toast.makeText(this, "Friend already added!", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-                                // ✅ Save friend to Firestore
-                                db.collection("users").document(currentUid)
-                                    .collection("friends").document(code)
-                                    .set(friend)
-                                    .addOnSuccessListener {
-                                        friendList.add(friend)
-                                        adapter.notifyItemInserted(friendList.size - 1)
-                                        saveFriendsToCache(friendList)
-                                        Toast.makeText(this, "Friend added!", Toast.LENGTH_SHORT).show()
+        // 🔸 Check Firestore first before adding
+        val userFriendsRef = db.collection("users").document(currentUid).collection("friends")
+        userFriendsRef.document(friendCode).get()
+            .addOnSuccessListener { doc ->
+                if (doc.exists()) {
+                    Toast.makeText(this, "Friend already exists in Firestore!", Toast.LENGTH_SHORT).show()
+                } else {
+                    // 🔹 Continue searching user with this code
+                    db.collection("users").get()
+                        .addOnSuccessListener { users ->
+                            for (user in users) {
+                                db.collection("users").document(user.id)
+                                    .collection("meta").document("inviteCode")
+                                    .get()
+                                    .addOnSuccessListener { invite ->
+                                        val code = invite.getString("code")
+                                        if (code == friendCode) {
+                                            val name = user.getString("name") ?: "Unknown"
+                                            val phone = user.getString("phone") ?: "No phone"
+                                            val friend = Friend(name, code, phone)
 
-                                        // ✅ Notify the child via SMS
-                                        if (phone.isNotEmpty() && phone != "No phone") {
-                                            try {
-                                                val smsManager = SmsManager.getDefault()
-                                                val message = "CODE:$activeUserCode added you"
-                                                smsManager.sendTextMessage(phone, null, message, null, null)
-                                                Log.d("MembersActivity", "📩 Notified $phone: $message")
-                                                Toast.makeText(this, "Child notified via SMS", Toast.LENGTH_SHORT).show()
-                                            } catch (e: Exception) {
-                                                Toast.makeText(this, "SMS failed: ${e.message}", Toast.LENGTH_SHORT).show()
-                                                Log.e("MembersActivity", "SMS error: ${e.message}")
-                                            }
-                                        } else {
-                                            Toast.makeText(this, "No phone number to notify", Toast.LENGTH_SHORT).show()
+                                            // ✅ Save friend to Firestore
+                                            userFriendsRef.document(code)
+                                                .set(friend)
+                                                .addOnSuccessListener {
+                                                    friendList.add(friend)
+                                                    adapter.notifyItemInserted(friendList.size - 1)
+                                                    saveFriendsToCache(friendList)
+                                                    Toast.makeText(this, "Friend added!", Toast.LENGTH_SHORT).show()
+
+                                                    // ✅ Notify via SMS
+                                                    if (phone.isNotEmpty() && phone != "No phone") {
+                                                        try {
+                                                            val smsManager = SmsManager.getDefault()
+                                                            val message = "CODE:$activeUserCode added you"
+                                                            smsManager.sendTextMessage(phone, null, message, null, null)
+                                                            Log.d("MembersActivity", "📩 Notified $phone: $message")
+                                                            Toast.makeText(this, "Child notified via SMS", Toast.LENGTH_SHORT).show()
+                                                        } catch (e: Exception) {
+                                                            Toast.makeText(this, "SMS failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                                                            Log.e("MembersActivity", "SMS error: ${e.message}")
+                                                        }
+                                                    } else {
+                                                        Toast.makeText(this, "No phone number to notify", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
                                         }
                                     }
                             }
@@ -386,3 +401,4 @@ class MembersActivity : AppCompatActivity() {
         }
     }
 }
+//10-10-25/7:21
