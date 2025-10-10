@@ -83,17 +83,42 @@ class SmsReceiver : BroadcastReceiver() {
         val type = object : TypeToken<List<Friend>>() {}.type
         val friends: List<Friend> = Gson().fromJson(json, type)
 
+        // 🔍 Log and display all fetched friends
+        val friendListInfo = StringBuilder("Fetched Friends:\n")
+        for (friend in friends) {
+            val normalized = normalizePhone(friend.phone)
+            friendListInfo.append("• ${friend.name}\n   Phone: ${friend.phone} (→ $normalized)\n   Code: ${friend.code}\n\n")
+            Log.d(TAG, "Friend Loaded -> Name: ${friend.name}, Phone: ${friend.phone} (normalized: $normalized), Code: ${friend.code}")
+        }
+
+        // Show the whole friend list in a notification (if it fits)
+        showNotification(context, "Fetched Friends", friendListInfo.toString().take(500)) // trims long list if too long
+
+        // Log what we're comparing against
+        Log.d(TAG, "🔍 Comparing sender $senderNormalized with code $requestedCode")
+
+        // Compare sender and code to friend list
         val matching = friends.find {
             normalizePhone(it.phone) == senderNormalized && it.code == requestedCode
         }
 
         if (matching != null) {
-            showNotification(context, "Verified Request", "Sending location to ${matching.name}")
+            showNotification(
+                context,
+                "Verified Match",
+                "Matched with: ${matching.name}\nPhone: ${matching.phone}\nCode: ${matching.code}"
+            )
             sendCurrentLocation(context, senderNormalized)
         } else {
-            showNotification(context, "Denied Request", "Unverified sender or code mismatch.")
+            showNotification(
+                context,
+                "Denied Request",
+                "No match found for sender: $senderNormalized\nCode: $requestedCode"
+            )
         }
     }
+
+
 
     private fun sendCurrentLocation(context: Context, phoneNumberNormalized: String) {
         val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -163,5 +188,15 @@ class SmsReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun normalizePhone(phone: String): String = phone.replace(Regex("\\D"), "")
+    private fun normalizePhone(phone: String): String {
+        var cleaned = phone.replace(Regex("\\D"), "") // remove non-digits
+
+        // Convert +63-prefixed numbers to 09 format for consistency
+        if (cleaned.startsWith("63") && cleaned.length == 12) {
+            cleaned = "0" + cleaned.substring(2)
+        }
+
+        return cleaned
+    }
+
 }
