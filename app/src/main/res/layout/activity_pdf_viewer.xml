@@ -1,47 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F0F0F0">
+    android:background="@android:color/black"
+    tools:context=".PDFViewerActivity">
 
-    <!-- Replace ImageView with PhotoView -->
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/pdf_image_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/navigation_controls"
-        android:contentDescription="PDF Page" />
-
-    <!-- Navigation controls (no changes needed here) -->
-    <LinearLayout
-        android:id="@+id/navigation_controls"
+    <!-- 1. App Bar for Title and Navigation -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:background="#212121"> <!-- A slightly lighter black for the toolbar -->
 
-        <Button
-            android:id="@+id/btn_previous_page"
-            android:layout_width="wrap_content"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:title="Document Viewer"
+            app:titleTextColor="@android:color/white" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- This RelativeLayout holds the PDF viewer and the bottom controls -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- PDF viewer that allows zooming -->
+        <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/pdf_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/navigation_controls"
+            android:contentDescription="PDF Page" />
+
+        <!-- 2. Modernized Navigation controls at the bottom -->
+        <RelativeLayout
+            android:id="@+id/navigation_controls"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Previous" />
+            android:layout_alignParentBottom="true"
+            android:padding="12dp">
 
-        <TextView
-            android:id="@+id/tv_page_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="Page 1 / X"
-            android:textSize="16sp" />
+            <!-- Previous Page Button -->
+            <ImageButton
+                android:id="@+id/btn_previous_page"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Previous Page"
+                android:src="@drawable/ic_chevron_left"
+                app:tint="@android:color/white" />
 
-        <Button
-            android:id="@+id/btn_next_page"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Next" />
-    </LinearLayout>
+            <!-- Page Number Indicator -->
+            <TextView
+                android:id="@+id/tv_page_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                tools:text="Page 1 / 10" />
 
-</RelativeLayout>
+            <!-- Next Page Button -->
+            <ImageButton
+                android:id="@+id/btn_next_page"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Next Page"
+                android:src="@drawable/ic_chevron_right"
+                app:tint="@android:color/white" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
