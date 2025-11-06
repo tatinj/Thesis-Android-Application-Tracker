@@ -65,7 +65,8 @@ dependencies {
     // ✅ Gson for JSON serialization/deserialization
     implementation(libs.gson)
 
-
+    // Zoom gradle
+    implementation("com.github.chrisbanes:PhotoView:2.3.0")
 
 
 }

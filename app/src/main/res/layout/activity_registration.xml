@@ -141,14 +141,30 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Terms and Policy Checkbox -->
-            <CheckBox
-                android:id="@+id/checkbox_terms"
-                android:layout_width="match_parent"
+            <!-- Terms and Policy Section -->
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="I agree to the Terms and Privacy Policy"
-                android:textColor="@color/white"
-                android:paddingTop="8dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_gravity="center"
+                android:paddingBottom="16dp">
+
+                <CheckBox
+                    android:id="@+id/checkbox_terms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:buttonTint="@color/checkbox_tint"/>
+
+                <TextView
+                    android:id="@+id/tv_terms_and_policy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="I agree to the Terms and Privacy Policy"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
 
             <!-- Sign Up Button -->
             <Button

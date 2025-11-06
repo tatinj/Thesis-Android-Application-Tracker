@@ -1,3 +1,5 @@
+// settings.gradle.kts
+
 pluginManagement {
     repositories {
         google {
@@ -9,6 +11,8 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        // Add JitPack here as well for plugins, if needed
+        maven("https://jitpack.io")
     }
 }
 dependencyResolutionManagement {
@@ -16,6 +20,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // Add JitPack here for dependencies
+        maven("https://jitpack.io")
     }
 }
 

@@ -45,6 +45,15 @@ class ProfileActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        // --- New code for the Settings Button ---
+        val btnSettings: Button = findViewById(R.id.btn_settings)
+        btnSettings.setOnClickListener {
+            // Create an Intent to start SettingsActivity
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+        }
+        // --- End of new code ---
+
         // Section buttons
         val friendSection: ImageView = findViewById(R.id.friend_section)
         val locationSection: ImageView = findViewById(R.id.location_section)
