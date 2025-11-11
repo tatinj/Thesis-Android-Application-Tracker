@@ -3,7 +3,8 @@ package com.example.dashboard_and_security_module
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.ImageButton // <-- Import ImageButton
+import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -15,80 +16,106 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class SettingsActivity : AppCompatActivity() {
 
-    // Firebase instances
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
 
-    // UI elements
     private lateinit var tvUserName: TextView
-    private lateinit var tvUserEmail: TextView
+    private lateinit var etUserEmail: EditText
+    private lateinit var etUserPhone: EditText
     private lateinit var btnLogout: Button
-    private lateinit var btnBack: ImageButton // <-- Declare the back button
+    private lateinit var btnBack: ImageButton
+    private lateinit var btnEditSave: Button
+
+    private var isEditMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
 
-        // Initialize Firebase
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
-        // Initialize UI elements
         tvUserName = findViewById(R.id.tv_user_name)
-        tvUserEmail = findViewById(R.id.tv_user_email)
+        etUserEmail = findViewById(R.id.et_user_email)
+        etUserPhone = findViewById(R.id.et_user_phone)
         btnLogout = findViewById(R.id.btn_logout)
-        btnBack = findViewById(R.id.btn_back) // <-- Find the back button by its ID
+        btnBack = findViewById(R.id.btn_back)
+        btnEditSave = findViewById(R.id.btn_edit_save)
 
-        // Apply window insets for edge-to-edge display
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Set listener for the back button
-        btnBack.setOnClickListener {
-            finish() // Closes this activity and returns to ProfileActivity
-        }
-
-        // Fetch and display user information
         loadUserProfile()
 
-        // Set up the logout button listener
-        btnLogout.setOnClickListener {
-            logoutUser()
+        btnBack.setOnClickListener { finish() }
+        btnLogout.setOnClickListener { logoutUser() }
+        btnEditSave.setOnClickListener { toggleEditSave() }
+    }
+
+    private fun toggleEditSave() {
+        if (isEditMode) {
+            if (saveUserProfile()) {
+                isEditMode = false
+                btnEditSave.text = "Edit Profile"
+                etUserEmail.isEnabled = false
+                etUserPhone.isEnabled = false
+            }
+        } else {
+            isEditMode = true
+            btnEditSave.text = "Save"
+            etUserEmail.isEnabled = true
+            etUserPhone.isEnabled = true
         }
     }
 
     private fun loadUserProfile() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            Toast.makeText(this, "No user logged in.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val uid = currentUser.uid
-        firestore.collection("users").document(uid).get()
+        val currentUser = auth.currentUser ?: return
+        firestore.collection("users").document(currentUser.uid).get()
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
-                    val name = document.getString("name")
-                    val email = document.getString("email")
-                    tvUserName.text = name ?: "No Name"
-                    tvUserEmail.text = email ?: "No Email"
+                    tvUserName.text = document.getString("name") ?: "No Name"
+                    etUserEmail.setText(document.getString("email") ?: "No Email")
+                    etUserPhone.setText(document.getString("phone") ?: "No Phone Number")
                 } else {
                     tvUserName.text = currentUser.displayName ?: "No Name"
-                    tvUserEmail.text = currentUser.email ?: "No Email"
+                    etUserEmail.setText(currentUser.email ?: "No Email")
+                    etUserPhone.setText(currentUser.phoneNumber ?: "No Phone Number")
                 }
             }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, "Failed to load profile: ${exception.message}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveUserProfile(): Boolean {
+        val phone = etUserPhone.text.toString()
+        if (phone.length != 11 || !phone.all { it.isDigit() }) {
+            Toast.makeText(this, "Phone number must be 11 digits and contain no letters or special characters.", Toast.LENGTH_LONG).show()
+            return false
+        }
+
+        val currentUser = auth.currentUser ?: return false
+        val uid = currentUser.uid
+
+        val updatedUser = mapOf(
+            "email" to etUserEmail.text.toString(),
+            "phone" to phone
+        )
+
+        firestore.collection("users").document(uid).update(updatedUser)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
             }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to update profile: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+
+        return true
     }
 
     private fun logoutUser() {
         auth.signOut()
-        // Correctly reference your "Login" activity
         val intent = Intent(this, Login::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)

@@ -40,15 +40,8 @@ class FriendAdapter(
         holder.tvNumber.text = "Phone: ${friend.phone}"
         holder.tvCode.text = "Code: ${friend.code}"
 
-        // When "Find" button is clicked
-        holder.btnFind.setOnClickListener {
-            onFindClicked(friend)
-        }
-
-        // When "Delete" button is clicked
-        holder.btnDelete.setOnClickListener {
-            showDeleteConfirmation(context, friend, position)
-        }
+        holder.btnFind.setOnClickListener { onFindClicked(friend) }
+        holder.btnDelete.setOnClickListener { showDeleteConfirmation(context, friend, position) }
     }
 
     override fun getItemCount(): Int = friendList.size
@@ -57,9 +50,7 @@ class FriendAdapter(
         AlertDialog.Builder(context)
             .setTitle("Delete Friend")
             .setMessage("Are you sure you want to delete ${friend.name}?")
-            .setPositiveButton("Yes") { _, _ ->
-                deleteFriendFromFirestore(context, friend, position)
-            }
+            .setPositiveButton("Yes") { _, _ -> deleteFriendFromFirestore(context, friend, position) }
             .setNegativeButton("Cancel", null)
             .show()
     }
@@ -69,14 +60,12 @@ class FriendAdapter(
         val db = FirebaseFirestore.getInstance()
         val currentUid = auth.currentUser?.uid ?: return
 
-        // Delete friend from Firestore
         db.collection("users")
             .document(currentUid)
             .collection("friends")
             .document(friend.code)
             .delete()
             .addOnSuccessListener {
-                // Remove friend from list
                 friendList.removeAt(position)
                 notifyItemRemoved(position)
                 Toast.makeText(context, "Friend deleted", Toast.LENGTH_SHORT).show()
