@@ -23,9 +23,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.Locale
 
-
-
-
 class MembersActivity : AppCompatActivity() {
 
     companion object {
@@ -201,7 +198,8 @@ class MembersActivity : AppCompatActivity() {
                     val phone = d.getString("phone") ?: "No phone"
                     val lat = d.getDouble("latitude")
                     val lon = d.getDouble("longitude")
-                    friendList.add(Friend(name, code, phone, lat, lon))
+                    val battery = d.getLong("batteryPercentage")?.toInt()
+                    friendList.add(Friend(name, code, phone, lat, lon, battery))
                 }
                 adapter.notifyDataSetChanged()
                 saveFriendsToCache(friendList)

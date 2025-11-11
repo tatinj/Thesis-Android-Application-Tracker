@@ -131,7 +131,7 @@ class Login : AppCompatActivity() {
                                     .putString("user_name", userName)
                                     .apply()
 
-                                val intent = Intent(this, ProfileActivity::class.java)
+                                val intent = Intent(this, LocationActivity::class.java)
                                 intent.putExtra("user_name", userName)
                                 startActivity(intent)
                                 finish()

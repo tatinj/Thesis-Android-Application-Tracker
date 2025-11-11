@@ -20,6 +20,7 @@ class FriendAdapter(
 
     inner class FriendViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tv_friend_name)
+        val tvBattery: TextView = itemView.findViewById(R.id.tv_friend_battery)
         val tvNumber: TextView = itemView.findViewById(R.id.tv_friend_number)
         val tvCode: TextView = itemView.findViewById(R.id.tv_friend_code)
         val btnFind: Button = itemView.findViewById(R.id.btn_find_friend)
@@ -39,6 +40,8 @@ class FriendAdapter(
         holder.tvName.text = friend.name
         holder.tvNumber.text = "Phone: ${friend.phone}"
         holder.tvCode.text = "Code: ${friend.code}"
+        holder.tvBattery.text = friend.batteryPercentage?.let { "Battery: $it%" } ?: "Battery: N/A"
+
 
         holder.btnFind.setOnClickListener { onFindClicked(friend) }
         holder.btnDelete.setOnClickListener { showDeleteConfirmation(context, friend, position) }

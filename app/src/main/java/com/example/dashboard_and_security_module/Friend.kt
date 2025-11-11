@@ -5,5 +5,6 @@ data class Friend(
     val code: String = "",
     val phone: String = "",
     val latitude: Double? = null,
-    val longitude: Double? = null
+    val longitude: Double? = null,
+    val batteryPercentage: Int? = null
 )
