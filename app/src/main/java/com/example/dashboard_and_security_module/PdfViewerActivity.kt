@@ -5,13 +5,13 @@ import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.view.View
-import android.widget.ImageButton // ✨ Changed from Button
+import android.widget.ImageButton
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.chrisbanes.photoview.PhotoView
-import com.google.android.material.appbar.MaterialToolbar // ✨ Added Toolbar import
+import com.google.android.material.appbar.MaterialToolbar
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -21,10 +21,10 @@ class PdfViewerActivity : AppCompatActivity() {
     // --- Views ---
     private lateinit var pdfImageView: PhotoView
     private lateinit var pageNumberTextView: TextView
-    private lateinit var prevButton: ImageButton // ✨ Updated type to ImageButton
-    private lateinit var nextButton: ImageButton // ✨ Updated type to ImageButton
-    private lateinit var toolbar: MaterialToolbar // ✨ Added Toolbar
-    private lateinit var navigationControls: RelativeLayout // ✨ Added for hiding/showing
+    private lateinit var prevButton: ImageButton
+    private lateinit var nextButton: ImageButton
+    private lateinit var toolbar: MaterialToolbar
+    private lateinit var navigationControls: RelativeLayout
 
     // --- PDF Rendering ---
     private var pdfRenderer: PdfRenderer? = null
@@ -49,7 +49,6 @@ class PdfViewerActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         toolbar.setNavigationOnClickListener {
-            // This handles the back button press
             onBackPressedDispatcher.onBackPressed()
         }
 
@@ -74,7 +73,6 @@ class PdfViewerActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        // ✨ Logic to hide/show UI for an immersive experience
         pdfImageView.setOnClickListener {
             toggleUiVisibility()
         }
@@ -92,7 +90,6 @@ class PdfViewerActivity : AppCompatActivity() {
         }
     }
 
-    // ✨ New function to show/hide the toolbar and navigation
     private fun toggleUiVisibility() {
         val isVisible = toolbar.visibility == View.VISIBLE
         if (isVisible) {
@@ -114,7 +111,6 @@ class PdfViewerActivity : AppCompatActivity() {
         }
         parcelFileDescriptor = ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)
         pdfRenderer = PdfRenderer(parcelFileDescriptor!!)
-        // Set the toolbar title with the document name
         supportActionBar?.title = fileName.removeSuffix(".pdf")
     }
 
@@ -124,21 +120,19 @@ class PdfViewerActivity : AppCompatActivity() {
             currentPageIndex = index
 
             // Render at a higher resolution for better quality when zooming.
-            val scaleFactor = 2f
+            val scaleFactor = 4f
             val bitmap = Bitmap.createBitmap(
                 (page.width * scaleFactor).toInt(),
                 (page.height * scaleFactor).toInt(),
                 Bitmap.Config.ARGB_8888
             )
 
-            // Fill with a white background before rendering the page content
             bitmap.eraseColor(android.graphics.Color.WHITE)
 
             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
             pdfImageView.setImageBitmap(bitmap)
         }
 
-        // Update UI
         val pageCount = pdfRenderer?.pageCount ?: 0
         pageNumberTextView.text = "Page ${index + 1} / $pageCount"
         prevButton.isEnabled = index > 0
@@ -147,7 +141,6 @@ class PdfViewerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Clean up resources
         try {
             currentPage?.close()
             pdfRenderer?.close()
