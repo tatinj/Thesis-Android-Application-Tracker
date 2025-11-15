@@ -72,60 +72,58 @@ class registration : AppCompatActivity() {
     }
 
     // This function will launch the PDF viewer
-    private fun openPdfViewer() {
+    private fun openPdfViewer(fileName: String) {
         val intent = Intent(this, PdfViewerActivity::class.java)
-        intent.putExtra("PDF_FILE_NAME", "terms_and_conditions.pdf")
+        intent.putExtra("PDF_FILE_NAME", fileName)
         startActivity(intent)
     }
 
     private fun setupClickableTermsText(textView: TextView) {
-        // --- STYLING FOR THE ENTIRE TEXT VIEW ---
-
-        // 1. Set the main text color for the whole line
-        textView.setTextColor(Color.parseColor("#F8F8FF"))
-
-        // 2. Set the outline for the whole line
-        val outlineWidth = 6f
-        textView.setShadowLayer(outlineWidth, 0f, 0f, Color.BLACK)
-
-        // 3. Disable hardware acceleration to make the outline sharp
-        textView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-
-
-        // --- LOGIC FOR THE CLICKABLE PART ---
-        val fullText = "I agree to the Terms and Privacy Policy"
-        val clickableText = "Terms and Privacy Policy"
+        val fullText = "I agree to Terms & Conditions and Privacy Policy"
+        val termsAndConditions = "Terms & Conditions"
+        val privacyPolicy = "Privacy Policy"
 
         val spannableString = SpannableString(fullText)
-        val startIndex = fullText.indexOf(clickableText)
-        val endIndex = startIndex + clickableText.length
 
-        val clickableSpan = object : ClickableSpan() {
+        val termsClickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                // Call the dedicated function to open the PDF
-                openPdfViewer()
+                openPdfViewer("terms_and_conditions.pdf")
             }
-
             override fun updateDrawState(ds: TextPaint) {
-                // We only need to control the underline and bold properties here now
-                // The color and shadow are already handled by the TextView itself
                 super.updateDrawState(ds)
-
-                // --- THIS IS THE FIX ---
-                // Force the link to use the same color as the parent TextView
-                ds.color = textView.currentTextColor
-
                 ds.isUnderlineText = true
-                ds.isFakeBoldText = true
+                ds.textSkewX = -0.25f
             }
         }
 
-        spannableString.setSpan(clickableSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        val policyClickableSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                openPdfViewer("privacy_policy.pdf")
+            }
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.isUnderlineText = true
+                ds.textSkewX = -0.25f
+            }
+        }
+
+        val termsStartIndex = fullText.indexOf(termsAndConditions)
+        if (termsStartIndex != -1) {
+            val termsEndIndex = termsStartIndex + termsAndConditions.length
+            spannableString.setSpan(termsClickableSpan, termsStartIndex, termsEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+
+        val policyStartIndex = fullText.indexOf(privacyPolicy)
+        if (policyStartIndex != -1) {
+            val policyEndIndex = policyStartIndex + privacyPolicy.length
+            spannableString.setSpan(policyClickableSpan, policyStartIndex, policyEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+
         textView.text = spannableString
         textView.movementMethod = LinkMovementMethod.getInstance()
+        textView.highlightColor = Color.TRANSPARENT
     }
 
-    // No changes needed below this line, but it's included for completeness
     private fun setupPhoneNumberValidation(field: TextInputEditText, layout: TextInputLayout) {
         field.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -163,7 +161,7 @@ class registration : AppCompatActivity() {
         email: String, name: String, pass: String, confirmPass: String, phone: String, isTermsChecked: Boolean
     ) {
         if (!isTermsChecked) {
-            showToast("You must agree to the Terms & Privacy Policy")
+            showToast("You must agree to the Terms & Conditions and Privacy Policy")
             return
         }
         if (email.isEmpty() || name.isEmpty() || pass.isEmpty() || phone.isEmpty() || confirmPass.isEmpty()) {
@@ -203,13 +201,7 @@ class registration : AppCompatActivity() {
     }
 
     private fun saveInviteCode(userId: String) {
-        val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
-        var inviteCode = sharedPref.getString("invite_code", null)
-
-        if (inviteCode == null) {
-            inviteCode = generateUniqueCode()
-            sharedPref.edit().putString("invite_code", inviteCode).apply()
-        }
+        val inviteCode = generateUniqueCode()
 
         val inviteRef = db.collection("users").document(userId).collection("meta").document("inviteCode")
 

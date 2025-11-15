@@ -48,7 +48,7 @@
         android:background="@drawable/rounded_button"
         android:gravity="center"
         android:padding="12dp"
-        android:text="Add Friend"
+        android:text="Add Members"
         android:textColor="@color/white"
         android:textSize="18sp" />
 
