@@ -38,7 +38,10 @@ class registration : AppCompatActivity() {
         val passwordField: TextInputEditText = findViewById(R.id.password)
         val confirmPasswordField: TextInputEditText = findViewById(R.id.confirm_password)
         val phoneNumberField: TextInputEditText = findViewById(R.id.phone_num)
+        val nameLayout: TextInputLayout = findViewById(R.id.name_layout)
+        val emailLayout: TextInputLayout = findViewById(R.id.email_layout)
         val passwordLayout: TextInputLayout = findViewById(R.id.password_layout)
+        val confirmPasswordLayout: TextInputLayout = findViewById(R.id.confirm_password_layout)
         val contactNumberLayout: TextInputLayout = findViewById(R.id.contact_number_layout)
         val checkboxTerms: CheckBox = findViewById(R.id.checkbox_terms)
         val tvTermsAndPolicy: TextView = findViewById(R.id.tv_terms_and_policy)
@@ -49,6 +52,11 @@ class registration : AppCompatActivity() {
         setupClickableTermsText(tvTermsAndPolicy)
 
         // --- Input Validation Listeners ---
+        setupNameValidation(nameField, nameLayout)
+        addTextWatcherToClearError(emailField, emailLayout)
+        addTextWatcherToClearError(passwordField, passwordLayout)
+        addTextWatcherToClearError(confirmPasswordField, confirmPasswordLayout)
+        addTextWatcherToClearError(phoneNumberField, contactNumberLayout)
         setupPhoneNumberValidation(phoneNumberField, contactNumberLayout)
         setupPasswordValidation(passwordField, passwordLayout)
 
@@ -124,6 +132,31 @@ class registration : AppCompatActivity() {
         textView.highlightColor = Color.TRANSPARENT
     }
 
+    private fun setupNameValidation(field: TextInputEditText, layout: TextInputLayout) {
+        field.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val input = s.toString()
+                if (input.isNotEmpty() && !input.matches("^[a-zA-Z\\s]*$".toRegex())) {
+                    layout.error = "Name can only contain letters and spaces."
+                } else {
+                    layout.error = null
+                }
+            }
+        })
+    }
+
+    private fun addTextWatcherToClearError(field: TextInputEditText, layout: TextInputLayout) {
+        field.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                layout.error = null
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
     private fun setupPhoneNumberValidation(field: TextInputEditText, layout: TextInputLayout) {
         field.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -160,12 +193,42 @@ class registration : AppCompatActivity() {
     private fun registerUser(
         email: String, name: String, pass: String, confirmPass: String, phone: String, isTermsChecked: Boolean
     ) {
+        val nameLayout: TextInputLayout = findViewById(R.id.name_layout)
+        val emailLayout: TextInputLayout = findViewById(R.id.email_layout)
+        val passwordLayout: TextInputLayout = findViewById(R.id.password_layout)
+        val confirmPasswordLayout: TextInputLayout = findViewById(R.id.confirm_password_layout)
+        val contactNumberLayout: TextInputLayout = findViewById(R.id.contact_number_layout)
+
+        var hasError = false
+        if (name.isEmpty()) {
+            nameLayout.error = "Name is required"
+            hasError = true
+        } else if (!name.matches("^[a-zA-Z\\s]*$".toRegex())) {
+            nameLayout.error = "Name can only contain letters and spaces."
+            hasError = true
+        }
+
+        if (email.isEmpty()) {
+            emailLayout.error = "Email is required"
+            hasError = true
+        }
+        if (pass.isEmpty()) {
+            passwordLayout.error = "Password is required"
+            hasError = true
+        }
+        if (confirmPass.isEmpty()) {
+            confirmPasswordLayout.error = "Confirm Password is required"
+            hasError = true
+        }
+        if (phone.isEmpty()) {
+            contactNumberLayout.error = "Contact Number is required"
+            hasError = true
+        }
+
+        if (hasError) return
+
         if (!isTermsChecked) {
             showToast("You must agree to the Terms & Conditions and Privacy Policy")
-            return
-        }
-        if (email.isEmpty() || name.isEmpty() || pass.isEmpty() || phone.isEmpty() || confirmPass.isEmpty()) {
-            showToast("All fields are required")
             return
         }
         if (pass != confirmPass) {

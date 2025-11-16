@@ -20,7 +20,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore
 
     private lateinit var tvUserName: TextView
-    private lateinit var etUserEmail: EditText
+    private lateinit var tvUserEmail: TextView
     private lateinit var etUserPhone: EditText
     private lateinit var btnLogout: Button
     private lateinit var btnBack: ImageButton
@@ -37,7 +37,7 @@ class SettingsActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
 
         tvUserName = findViewById(R.id.tv_user_name)
-        etUserEmail = findViewById(R.id.et_user_email)
+        tvUserEmail = findViewById(R.id.tv_user_email)
         etUserPhone = findViewById(R.id.et_user_phone)
         btnLogout = findViewById(R.id.btn_logout)
         btnBack = findViewById(R.id.btn_back)
@@ -61,13 +61,11 @@ class SettingsActivity : AppCompatActivity() {
             if (saveUserProfile()) {
                 isEditMode = false
                 btnEditSave.text = "Edit Profile"
-                etUserEmail.isEnabled = false
                 etUserPhone.isEnabled = false
             }
         } else {
             isEditMode = true
             btnEditSave.text = "Save"
-            etUserEmail.isEnabled = true
             etUserPhone.isEnabled = true
         }
     }
@@ -78,11 +76,11 @@ class SettingsActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
                     tvUserName.text = document.getString("name") ?: "No Name"
-                    etUserEmail.setText(document.getString("email") ?: "No Email")
+                    tvUserEmail.text = document.getString("email") ?: "No Email"
                     etUserPhone.setText(document.getString("phone") ?: "No Phone Number")
                 } else {
                     tvUserName.text = currentUser.displayName ?: "No Name"
-                    etUserEmail.setText(currentUser.email ?: "No Email")
+                    tvUserEmail.text = currentUser.email ?: "No Email"
                     etUserPhone.setText(currentUser.phoneNumber ?: "No Phone Number")
                 }
             }
@@ -99,7 +97,6 @@ class SettingsActivity : AppCompatActivity() {
         val uid = currentUser.uid
 
         val updatedUser = mapOf(
-            "email" to etUserEmail.text.toString(),
             "phone" to phone
         )
 

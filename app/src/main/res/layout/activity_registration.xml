@@ -40,6 +40,7 @@
 
             <!-- Name Field -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/name_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
@@ -51,7 +52,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/name"
-                    android:hint="Full Name"
+                    android:hint="Full Name *"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
@@ -59,6 +60,7 @@
 
             <!-- Email Field -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/email_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
@@ -70,7 +72,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/email"
-                    android:hint="Email"
+                    android:hint="Email *"
                     android:inputType="textEmailAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -91,7 +93,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/phone_num"
-                    android:hint="Contact Number"
+                    android:hint="Contact Number *"
                     android:inputType="phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -113,7 +115,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password"
-                    android:hint="Password"
+                    android:hint="Password *"
                     android:inputType="textPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -122,6 +124,7 @@
 
             <!-- Confirm Password Field -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/confirm_password_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:passwordToggleEnabled="true"
@@ -134,7 +137,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/confirm_password"
-                    android:hint="Confirm Password"
+                    android:hint="Confirm Password *"
                     android:inputType="textPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
