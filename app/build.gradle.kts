@@ -39,10 +39,12 @@ android {
 dependencies {
     implementation(platform(libs.firebase.bom)) // Firebase BoM (always declare first)
 
-    // Firebase dependencies
-    implementation(libs.google.firebase.auth.ktx)
-    implementation(libs.google.firebase.auth)
-    implementation(libs.google.firebase.firestore)
+    // --- START: CORRECTED FIREBASE DEPENDENCIES ---
+    // Use the aliases defined in your libs.versions.toml file
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.database) // Added this based on your toml file
+    // --- END: CORRECTED FIREBASE DEPENDENCIES ---
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -50,9 +52,11 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    // Google Sign-In
+    // --- START: CORRECTED GOOGLE PLAY SERVICES DEPENDENCIES ---
+    // Use the aliases defined in your libs.versions.toml file
     implementation(libs.play.services.auth)
-    implementation(libs.gms.play.services.location)
+    implementation(libs.play.services.location)
+    // --- END: CORRECTED GOOGLE PLAY SERVICES DEPENDENCIES ---
 
     // Testing Dependencies
     testImplementation(libs.junit)
@@ -67,6 +71,4 @@ dependencies {
 
     // Zoom gradle
     implementation("com.github.chrisbanes:PhotoView:2.3.0")
-
-
 }

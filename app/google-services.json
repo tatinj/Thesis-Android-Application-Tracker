@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "209122711954",
+    "firebase_url": "https://dashboard-and-security-m-966df-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "dashboard-and-security-m-966df",
     "storage_bucket": "dashboard-and-security-m-966df.firebasestorage.app"
   },
@@ -14,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "209122711954-f6ju02vbmt96i4a9nmjv2ak4nt92g9fm.apps.googleusercontent.com",
+          "client_id": "209122711954-q8im5e0521osk9nc2o5akitvs6a0jksa.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.dashboard_and_security_module",
-            "certificate_hash": "d0c940710941eedc9cc6a2a895161e74e3fce100"
+            "certificate_hash": "bc9db8d977714fbc73cd47fbc92c4dd75562d09f"
           }
         },
         {
@@ -47,6 +48,35 @@
         "mobilesdk_app_id": "1:209122711954:android:aa32247bf608110488094b",
         "android_client_info": {
           "package_name": "com.example.dashboard_and_secutiry_module_1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "209122711954-iclo45f5sl0m87vp6mhm17hgjdi3oke6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOf0cOcloUFeF1AbsnIh6tq1fuE2inwp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "209122711954-iclo45f5sl0m87vp6mhm17hgjdi3oke6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:209122711954:android:383a10608b4c697f88094b",
+        "android_client_info": {
+          "package_name": "com.example.familytracker"
         }
       },
       "oauth_client": [

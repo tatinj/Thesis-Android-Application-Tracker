@@ -168,6 +168,68 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- =============================================================== -->
+    <!-- START: NEW SECURITY CARD FOR 2FA                                -->
+    <!-- =============================================================== -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_security"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_profile">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tv_security_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Account Security"
+                android:textColor="#1B5E20"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_2fa_status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Two-Factor Authentication is disabled."
+                android:textColor="#388E3C"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_security_label" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_manage_2fa"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Enable 2FA"
+                android:textColor="#1B5E20"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_2fa_status" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+    <!-- =============================================================== -->
+    <!-- END: NEW SECURITY CARD FOR 2FA                                  -->
+    <!-- =============================================================== -->
+
+
     <!-- Edit/Save Profile Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_edit_save"

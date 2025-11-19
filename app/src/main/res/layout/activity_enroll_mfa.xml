@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="24dp"
+    tools:context=".EnrollMfaActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enable Two-Factor Authentication"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter your phone number to receive a verification code. Please include your country code (e.g., +1234567890)."
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Phone Number Input -->
+    <EditText
+        android:id="@+id/phone_number_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Phone number with country code"
+        android:inputType="phone"
+        android:minHeight="48dp"
+        android_layout_marginBottom="8dp"/>
+
+    <!-- Send Code Button -->
+    <Button
+        android:id="@+id/send_code_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send Code"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter the code you received via SMS"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Verification Code Input -->
+    <EditText
+        android:id="@+id/code_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Verification Code"
+        android:inputType="number"
+        android:gravity="center"
+        android:minHeight="48dp"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Verify and Enroll Button -->
+    <Button
+        android:id="@+id/verify_enroll_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Verify &amp; Enroll" />
+
+</LinearLayout>

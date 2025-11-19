@@ -63,7 +63,22 @@
             android:exported="false" />
         <activity
             android:name=".MainDashboard"
-            android:exported="false" /> <!-- 👤 Registration & Login -->
+            android:exported="false" />
+
+        <!-- =============================================================== -->
+        <!-- START: ADDED 2FA ACTIVITY DECLARATIONS TO FIX CRASHES           -->
+        <!-- =============================================================== -->
+        <activity
+            android:name=".EnrollMfaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MfaActivity"
+            android:exported="false" />
+        <!-- =============================================================== -->
+        <!-- END: ADDED 2FA ACTIVITY DECLARATIONS                            -->
+        <!-- =============================================================== -->
+
+        <!-- 👤 Registration & Login -->
         <activity
             android:name=".registration"
             android:exported="false"
