@@ -89,11 +89,11 @@ class registration : AppCompatActivity() {
         // First, remove any non-digit characters
         val digitsOnly = number.filter { it.isDigit() }
         return when {
-            // If it starts with "09" and has 11 digits
+            // kapag nag starts with "09" and has 11 digits
             digitsOnly.startsWith("09") && digitsOnly.length == 11 -> "+63" + digitsOnly.substring(1)
-            // If it starts with "9" and has 10 digits
+            // kapag nag starts with "9" and has 10 digits
             digitsOnly.startsWith("9") && digitsOnly.length == 10 -> "+63$digitsOnly"
-            // If it's already in "+639" format with 13 characters
+            // kapag wala na kelangan baguhin sa phone number format "+639" format with 13 characters
             number.startsWith("+639") && number.length == 13 -> number
             // If it's in "639" format
             digitsOnly.startsWith("639") && digitsOnly.length == 12 -> "+$digitsOnly"

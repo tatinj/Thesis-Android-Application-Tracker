@@ -68,10 +68,6 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Converts a local Philippine phone number (e.g., 09...) to E.164 format (+639...).
-     * This ensures data consistency.
-     */
     private fun normalizePhoneNumber(number: String): String {
         // First, remove any non-digit characters
         val digitsOnly = number.filter { it.isDigit() }
@@ -95,8 +91,8 @@ class SettingsActivity : AppCompatActivity() {
 
         if (enrolledFactors.isNotEmpty()) {
             tv2faStatus.text = "Two-Factor Authentication is enabled."
-            btnManage2fa.text = "Manage 2FA" // Or "Disable"
-            // You can add logic here to un-enroll if needed
+            btnManage2fa.text = "Manage 2FA" // pwede idisbled yung 2FA
+
         } else {
             tv2faStatus.text = "Two-Factor Authentication is disabled."
             btnManage2fa.text = "Enable 2FA"
@@ -121,7 +117,7 @@ class SettingsActivity : AppCompatActivity() {
             etUserPhone.isEnabled = true
             etUserPhone.requestFocus()
         } else {
-            // When saving, the saveUserProfile function will handle UI updates
+
             saveUserProfile()
             btnEditSave.text = "Edit Profile"
             etUserPhone.isEnabled = false
@@ -158,7 +154,7 @@ class SettingsActivity : AppCompatActivity() {
             return
         }
 
-        // Update the UI to show the clean, normalized number immediately.
+
         etUserPhone.setText(normalizedPhone)
 
         val currentUser = auth.currentUser ?: return

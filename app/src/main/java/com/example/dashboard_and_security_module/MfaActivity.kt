@@ -51,11 +51,7 @@ class MfaActivity : AppCompatActivity() {
         val options = PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
             // For a second-factor sign-in, the hint is required.
             .setMultiFactorHint(phoneInfo)
-            // --- THIS IS THE KEY ---
-            // We also must explicitly provide the session from the resolver.
-            // This links this verification request to the initial login attempt.
             .setMultiFactorSession(resolver.session)
-            // --- END OF KEY ---
             .setTimeout(60L, TimeUnit.SECONDS)
             .setActivity(this)
             .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {

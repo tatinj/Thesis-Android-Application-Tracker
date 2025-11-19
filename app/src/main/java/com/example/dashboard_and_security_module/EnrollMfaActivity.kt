@@ -40,9 +40,8 @@ class EnrollMfaActivity : AppCompatActivity() {
                     Toast.makeText(this, "Invalid phone number format. Please use 09...", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
-                // Use the clean, normalized number to start verification
+                // Pass normalized number to start verification
                 startPhoneNumberVerification(normalizedPhone)
-                // --- END OF KEY CHANGE ---
             } else {
                 Toast.makeText(this, "Please enter a phone number.", Toast.LENGTH_SHORT).show()
             }
@@ -59,9 +58,7 @@ class EnrollMfaActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Converts a local Philippine phone number (e.g., 09...) to E.164 format (+639...).
-     */
+    // KINOCONVERT YUNG PH LOCAL NUMBER INTO +63 YEA YEA
     private fun normalizePhoneNumber(number: String): String {
         val digitsOnly = number.filter { it.isDigit() }
         return when {
@@ -73,7 +70,7 @@ class EnrollMfaActivity : AppCompatActivity() {
         }
     }
 
-    private fun startPhoneNumberVerification(phoneNumber: String) { // Now receives a normalized number
+    private fun startPhoneNumberVerification(phoneNumber: String) { // NIRERECEIVE YUNG KINONVERT
         val user = auth.currentUser
         if (user == null) {
             Toast.makeText(this, "You must be logged in to enroll.", Toast.LENGTH_SHORT).show()
@@ -84,7 +81,7 @@ class EnrollMfaActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 val multiFactorSession = task.result
                 val options = PhoneAuthOptions.newBuilder(auth)
-                    .setPhoneNumber(phoneNumber) // Use the normalized phone number here
+                    .setPhoneNumber(phoneNumber)
                     .setTimeout(60L, TimeUnit.SECONDS)
                     .setActivity(this)
                     .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
