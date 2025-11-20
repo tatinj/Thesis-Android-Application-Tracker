@@ -98,7 +98,7 @@ class registration : AppCompatActivity() {
     ) {
         // --- Comprehensive validation combining both versions ---
         if (email.isEmpty() || name.isEmpty() || pass.isEmpty() || phone.isEmpty() || confirmPass.isEmpty()) {
-            showToast("All fields are required")
+            showToast("Please Fill all the requirements")
             return
         }
         if (!isTermsChecked) {
