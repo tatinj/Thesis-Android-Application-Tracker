@@ -1,59 +1,59 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_green_600"
-    android:padding="1dp"
-    >
+    android:background="#F7F5FA"
+    android:padding="1dp">
 
     <ImageView
         android:id="@+id/background_image"
-        android:layout_width="600dp"
+        android:layout_width="900dp"
         android:layout_height="500dp"
         android:layout_marginTop="50dp"
+        android:alpha="0.5"
         android:scaleType="centerCrop"
-        android:src="@drawable/background"
-        android:alpha="0.5" />
+        android:background="@drawable/new_bg" />
 
     <!-- Logo and HomeHaven Section -->
     <LinearLayout
         android:id="@+id/logo_section"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="24dp"
-        android:layout_marginTop="50dp"
+        android:layout_height="169dp"
         android:layout_centerHorizontal="true"
-        >
-
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/logo_2"
-            android:contentDescription="Profile Logo"/>
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="24dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginLeft="16dp"
-            android:gravity="center">
+            android:layout_marginLeft="1dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="100dp"
+                android:layout_height="73dp"
+                android:contentDescription="Profile Logo"
+                android:gravity="center"
+                android:src="@drawable/home_haven" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="HomeHaven"
-                android:textColor="@color/white"
+                android:textColor="@color/deep_purple"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="28dp"
                 android:text="Your Family's safe space, anytime, anywhere"
-                android:textColor="@color/white"
-                android:textSize="9sp" />
+                android:textColor="@color/deep_purple"
+                android:textSize="15sp" />
+
         </LinearLayout>
     </LinearLayout>
 
@@ -62,39 +62,42 @@
         android:id="@+id/get_started_section"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
         android:layout_below="@id/logo_section"
-        android:layout_marginTop="50dp">
+        android:layout_marginTop="41dp"
+        android:gravity="center"
+        android:orientation="vertical">
 
+        <!-- Get Started Button -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="264dp"
+            android:layout_height="50dp"
             android:gravity="center"
-            android:text="Let's Get"
-            android:textColor="@color/white"
-            android:textSize="45sp" />
+            android:text="LET'S GET"
+            android:textColor="#440859"
+            android:textSize="45sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="263dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
             android:gravity="center"
-            android:text="Started!"
-            android:textColor="@color/green_900"
+            android:text="STARTED!"
+            android:textColor="@color/deep_purple"
             android:textSize="50sp"
             android:textStyle="bold" />
 
-        <!-- Get Started Button -->
         <Button
             android:id="@+id/btn_get_started"
-            android:layout_width="150dp"
+            android:layout_width="191dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/green_900"
-            android:padding="12dp"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="95dp"
+            android:backgroundTint="#6C4AB6"
+            android:gravity="center"
+            android:padding="10dp"
+            android:rotationX="2"
             android:text="Get Started"
             android:textColor="@color/white"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
     </LinearLayout>
 </RelativeLayout>

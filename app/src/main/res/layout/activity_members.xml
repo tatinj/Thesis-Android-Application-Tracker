@@ -27,7 +27,7 @@
         android:layout_margin="16dp"
         android:background="@color/green_800"
         android:gravity="center"
-        android:hint="Enter friend's code"
+        android:hint="Enter family's code"
         android:padding="16dp"
         android:textColor="@color/white"
         android:textColorHint="@color/white"

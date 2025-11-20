@@ -3,16 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_green_600"
+    android:background="#FFFFFF"
     android:padding="1dp">
 
     <ImageView
         android:id="@+id/background_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:alpha="0.5"
         android:scaleType="centerCrop"
-        android:src="@drawable/background"
-        android:alpha="0.5" />
+        android:src="@drawable/new_bg" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -23,20 +23,20 @@
             android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:padding="50dp"
             tools:context=".registration">
 
             <TextView
-                android:text="Sign Up"
-                android:textSize="25sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="16dp"
+                android:text="Sign Up"
                 android:textAlignment="center"
-                android:paddingBottom="16dp" />
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
             <!-- Name Field -->
             <com.google.android.material.textfield.TextInputLayout
@@ -45,16 +45,16 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
                 app:boxBackgroundMode="filled"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
                 app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp">
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/name"
-                    android:hint="Full Name *"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="Full Name *" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -65,17 +65,17 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
                 app:boxBackgroundMode="filled"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
                 app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp">
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/email"
-                    android:hint="Email *"
-                    android:inputType="textEmailAddress"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="Email *"
+                    android:inputType="textEmailAddress" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -86,17 +86,17 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
                 app:boxBackgroundMode="filled"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
                 app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp">
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/phone_num"
-                    android:hint="Contact Number *"
-                    android:inputType="phone"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="Contact Number *"
+                    android:inputType="phone" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -105,20 +105,20 @@
                 android:id="@+id/password_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:passwordToggleEnabled="true"
                 android:paddingBottom="8dp"
                 app:boxBackgroundMode="filled"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
                 app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp">
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password"
-                    android:hint="Password *"
-                    android:inputType="textPassword"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="Password *"
+                    android:inputType="textPassword" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -127,20 +127,20 @@
                 android:id="@+id/confirm_password_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:passwordToggleEnabled="true"
                 android:paddingBottom="16dp"
                 app:boxBackgroundMode="filled"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
                 app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp">
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/confirm_password"
-                    android:hint="Confirm Password *"
-                    android:inputType="textPassword"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="Confirm Password *"
+                    android:inputType="textPassword" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -148,24 +148,25 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
                 android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:paddingBottom="16dp">
 
                 <CheckBox
                     android:id="@+id/checkbox_terms"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:buttonTint="@color/checkbox_tint" />
+                    app:buttonTint="@color/deep_purple" />
 
                 <TextView
                     android:id="@+id/tv_terms_and_policy"
-                    android:layout_width="wrap_content"
+                    android:layout_width="217dp"
                     android:layout_height="wrap_content"
                     android:text="I agree to Terms &amp; Conditions and Privacy Policy"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    android:textColor="@color/deep_purple"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -175,7 +176,7 @@
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:backgroundTint="@color/green_900"
+                android:backgroundTint="#6C4AB6"
                 android:gravity="center"
                 android:padding="12dp"
                 android:text="Sign Up"
@@ -185,15 +186,15 @@
             <!-- Already have an account? Login -->
             <TextView
                 android:id="@+id/tv_login"
-                android:text="Already have an account? Login"
-                android:textSize="14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:textStyle="bold"
-                android:textColor="@color/white" />
+                android:text="Already have an account? Login"
+                android:textColor="@color/deep_purple"
+                android:textSize="15sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>
