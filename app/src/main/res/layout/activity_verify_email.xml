@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp"
+    tools:context=".VerifyEmailActivity">
+
+    <!-- You can find a suitable email icon in Android Studio's vector assets -->
+    <ImageView
+        android:id="@+id/icon_email"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_email"
+        android:contentDescription="Email Icon" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Verify Your Email"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_verification_prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:gravity="center"
+        android:text="A verification link has been sent to your email address. Please click the link to continue."
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn_continue_to_app"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="I've Verified, Continue" />
+
+    <TextView
+        android:id="@+id/tv_resend_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="8dp"
+        android:text="Resend Verification Email"
+        android:textColor="?attr/colorPrimary" />
+
+</LinearLayout>

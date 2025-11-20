@@ -65,6 +65,12 @@
             android:name=".MainDashboard"
             android:exported="false" />
 
+            <!-- GATE KEEPER SA EMAIL REGISTRATION -->
+
+        <activity
+            android:name=".VerifyEmailActivity"
+            android:exported="false" />
+
 
         <!-- DITO YUNG FUNCTIONS NG 2FA         -->
         <activity
