@@ -36,10 +36,10 @@ class Login : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         val emailField: TextInputEditText = findViewById(R.id.email)
 
-        // Check for existing user AFTER the main view is ready.
+
         emailField.post {
             if (auth.currentUser != null) {
-                // If user is already logged in, go straight to LocationActivity
+
                 handleSuccessfulLogin()
                 return@post
             }
@@ -65,6 +65,9 @@ class Login : AppCompatActivity() {
         val tvRegister: TextView = findViewById(R.id.register)
         val googleSignInButton: ImageButton = findViewById(R.id.google_btn)
 
+        val tvForgotPassword: TextView = findViewById(R.id.tv_forgot_password)
+
+
         btnLogin.setOnClickListener {
             val email = emailField.text?.toString()?.trim() ?: ""
             val password = passwordField.text?.toString()?.trim() ?: ""
@@ -87,12 +90,21 @@ class Login : AppCompatActivity() {
         googleSignInButton.setOnClickListener {
             signInWithGoogle()
         }
+
+        // ETO ANG FORGOT PASSWORD FUNCTION
+        tvForgotPassword.setOnClickListener {
+
+            val intent = Intent(this, ForgotPasswordActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
+    //  LOGIN USER FOR WITH 2FA
     private fun loginUser(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
@@ -103,15 +115,9 @@ class Login : AppCompatActivity() {
                     val exception = task.exception
                     if (exception is FirebaseAuthMultiFactorException) {
                         Log.d("Login", "2FA is required. Handing off to MfaActivity.")
-
-                        // --- START: THIS IS THE CORRECT, CRASH-FREE LOGIC ---
-                        // Use the static holder in MfaActivity to pass the resolver
                         MfaActivity.mfaResolver = exception.resolver
-                        // Start the activity with a clean intent
                         val intent = Intent(this, MfaActivity::class.java)
                         startActivity(intent)
-                        // --- END: THIS IS THE CORRECT, CRASH-FREE LOGIC ---
-
                     } else {
                         showToast("Authentication failed: ${exception?.message}")
                     }
@@ -151,11 +157,9 @@ class Login : AppCompatActivity() {
                 val exception = task.exception
                 if (exception is FirebaseAuthMultiFactorException) {
                     Log.d("Login", "2FA is required for Google user. Starting MFA flow.")
-                    // --- START: APPLYING THE FIX HERE TOO ---
                     MfaActivity.mfaResolver = exception.resolver
                     val intent = Intent(this, MfaActivity::class.java)
                     startActivity(intent)
-                    // --- END: APPLYING THE FIX HERE TOO ---
                 } else {
                     Log.e("Login", "Google Auth Error", exception)
                     showToast("Google authentication failed: ${exception?.message}")

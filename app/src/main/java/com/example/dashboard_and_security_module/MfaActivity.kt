@@ -2,11 +2,15 @@ package com.example.dashboard_and_security_module
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
+import android.view.View
 import android.widget.Button
-import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.*
 import java.util.concurrent.TimeUnit
@@ -17,17 +21,30 @@ class MfaActivity : AppCompatActivity() {
         var mfaResolver: MultiFactorResolver? = null
     }
 
-    private lateinit var resolver: MultiFactorResolver
-    private lateinit var smsCodeEditText: EditText
+    // UI Components
+    private lateinit var smsCodeLayout: TextInputLayout
+    private lateinit var smsCodeEditText: TextInputEditText
     private lateinit var verifyButton: Button
+    private lateinit var resendCodeTextView: TextView
+    private lateinit var resendTimerTextView: TextView
+
+    // Firebase and state
+    private lateinit var resolver: MultiFactorResolver
+    private lateinit var phoneInfo: PhoneMultiFactorInfo
     private var verificationId: String? = null
+    private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
+    private var countdownTimer: CountDownTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mfa)
 
+        // --- Initialize UI components ---
+        smsCodeLayout = findViewById(R.id.sms_code_layout)
         smsCodeEditText = findViewById(R.id.sms_code_edit_text)
         verifyButton = findViewById(R.id.verify_button)
+        resendCodeTextView = findViewById(R.id.tv_resend_code)
+        resendTimerTextView = findViewById(R.id.tv_resend_timer)
 
         resolver = mfaResolver
             ?: run {
@@ -36,40 +53,47 @@ class MfaActivity : AppCompatActivity() {
                 return
             }
 
-        val phoneHint = resolver.hints.find { it is PhoneMultiFactorInfo } as? PhoneMultiFactorInfo
+        phoneInfo = resolver.hints.find { it is PhoneMultiFactorInfo } as? PhoneMultiFactorInfo
             ?: run {
                 Toast.makeText(this, "No phone number hint found for 2FA.", Toast.LENGTH_LONG).show()
                 finish()
                 return
             }
 
-        // --- KEY LOGIC: AUTOMATICALLY SEND THE CODE ---
-        sendVerificationCode(phoneHint)
+        // --- Automatically send the initial code ---
+        sendVerificationCode(phoneInfo)
+
+        // Set up the resend button listener
+        resendCodeTextView.setOnClickListener {
+            resendVerificationCode()
+        }
     }
 
-    private fun sendVerificationCode(phoneInfo: PhoneMultiFactorInfo) {
-        val options = PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
-            // For a second-factor sign-in, the hint is required.
+    private fun sendVerificationCode(phoneInfo: PhoneMultiFactorInfo, token: PhoneAuthProvider.ForceResendingToken? = null) {
+        val optionsBuilder = PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
             .setMultiFactorHint(phoneInfo)
             .setMultiFactorSession(resolver.session)
             .setTimeout(60L, TimeUnit.SECONDS)
             .setActivity(this)
             .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                override fun onCodeSent(sentVerificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                override fun onCodeSent(sentVerificationId: String, forceResendingToken: PhoneAuthProvider.ForceResendingToken) {
                     Log.d("MfaActivity", "Verification code sent successfully.")
                     this@MfaActivity.verificationId = sentVerificationId
+                    this@MfaActivity.resendToken = forceResendingToken // <-- Store the token for resending
                     Toast.makeText(applicationContext, "Verification code sent.", Toast.LENGTH_SHORT).show()
 
-                    // Now that the code is sent, set up the verify button listener
+                    startResendTimer() // <-- Start the countdown
+
+                    // We set the listener here, after we know the code has been sent.
                     verifyButton.setOnClickListener {
                         val smsCode = smsCodeEditText.text.toString().trim()
-                        if (smsCode.isNotEmpty()) {
-                            val credential = PhoneAuthProvider.getCredential(sentVerificationId, smsCode)
-                            val assertion = PhoneMultiFactorGenerator.getAssertion(credential)
-                            resolveSignIn(resolver, assertion)
+                        if (smsCode.length != 6) {
+                            smsCodeLayout.error = "The code must be 6 digits."
+                            return@setOnClickListener
                         } else {
-                            Toast.makeText(this@MfaActivity, "Please enter the SMS code.", Toast.LENGTH_SHORT).show()
+                            smsCodeLayout.error = null
                         }
+                        verifySmsCode(sentVerificationId, smsCode)
                     }
                 }
 
@@ -84,9 +108,46 @@ class MfaActivity : AppCompatActivity() {
                     resolveSignIn(resolver, multiFactorAssertion)
                 }
             })
-            .build()
 
-        PhoneAuthProvider.verifyPhoneNumber(options)
+
+        if (token != null) {
+            optionsBuilder.setForceResendingToken(token)
+        }
+
+        PhoneAuthProvider.verifyPhoneNumber(optionsBuilder.build())
+    }
+
+    private fun resendVerificationCode() {
+        if (resendToken == null) {
+            Toast.makeText(this, "Cannot resend code at this time.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        sendVerificationCode(phoneInfo, resendToken)
+        Toast.makeText(this, "Resending verification code...", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun startResendTimer() {
+        resendCodeTextView.visibility = View.GONE
+        resendTimerTextView.visibility = View.VISIBLE
+
+        countdownTimer?.cancel()
+
+        countdownTimer = object : CountDownTimer(60000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                resendTimerTextView.text = "Resend code in ${millisUntilFinished / 1000}s"
+            }
+
+            override fun onFinish() {
+                resendTimerTextView.visibility = View.GONE
+                resendCodeTextView.visibility = View.VISIBLE
+            }
+        }.start()
+    }
+
+    private fun verifySmsCode(verificationId: String, smsCode: String) {
+        val credential = PhoneAuthProvider.getCredential(verificationId, smsCode)
+        val multiFactorAssertion = PhoneMultiFactorGenerator.getAssertion(credential)
+        resolveSignIn(resolver, multiFactorAssertion)
     }
 
     private fun resolveSignIn(resolver: MultiFactorResolver, assertion: MultiFactorAssertion) {
@@ -100,7 +161,8 @@ class MfaActivity : AppCompatActivity() {
                     finish()
                 } else {
                     Log.w("MfaActivity", "2FA sign-in resolution failed.", task.exception)
-                    Toast.makeText(this, "Verification failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    smsCodeLayout.error = "The code you entered is incorrect."
+                    Toast.makeText(this, "Verification failed. Please try again.", Toast.LENGTH_LONG).show()
                 }
             }
     }
@@ -108,5 +170,6 @@ class MfaActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mfaResolver = null
+        countdownTimer?.cancel()
     }
 }

@@ -34,7 +34,7 @@ class registration : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // --- View Initialization (from your detailed UI version) ---
+        // --- View Initialization (from your detailed version) ---
         val nameField: TextInputEditText = findViewById(R.id.name)
         val emailField: TextInputEditText = findViewById(R.id.email)
         val passwordField: TextInputEditText = findViewById(R.id.password)
@@ -53,8 +53,8 @@ class registration : AppCompatActivity() {
         // --- Setup for Clickable "Terms and Privacy Policy" Text ---
         setupClickableTermsText(tvTermsAndPolicy)
 
-        // --- Input Validation Listeners (from your detailed UI version) ---
-        setupNameValidation(nameField, nameLayout)
+        // --- DATA Validation Listeners ---
+        setupNameValidation(nameField, nameLayout) // This function is now updated
         addTextWatcherToClearError(emailField, emailLayout)
         addTextWatcherToClearError(passwordField, passwordLayout)
         addTextWatcherToClearError(confirmPasswordField, confirmPasswordLayout)
@@ -69,8 +69,6 @@ class registration : AppCompatActivity() {
             val password = passwordField.text.toString()
             val confirmPassword = confirmPasswordField.text.toString()
             val phoneNum = phoneNumberField.text.toString().trim()
-
-
             registerUser(email, name, password, confirmPassword, phoneNum, checkboxTerms.isChecked)
         }
 
@@ -79,16 +77,30 @@ class registration : AppCompatActivity() {
         }
     }
 
-    // --- START: ALL BACKEND AND HELPER FUNCTIONS ---
+    // DATA VALIDATION SA FULL NAME
+    private fun setupNameValidation(field: TextInputEditText, layout: TextInputLayout) {
+        field.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val input = s.toString()
+                // The new regex now allows letters, spaces, hyphens, and periods.
+                if (input.isNotEmpty() && !input.matches("^[a-zA-Z.\\-\\s]*$".toRegex())) {
+                    layout.error = "Name can only contain letters, spaces, '.', and '-'"
+                } else {
+                    layout.error = null
+                }
+            }
+        })
+    }
+    // --- END OF KEY CHANGE ---
 
+    // --- All your other functions (normalizePhoneNumber, registerUser, etc.) are perfect and remain the same ---
     private fun normalizePhoneNumber(number: String): String {
         val digitsOnly = number.filter { it.isDigit() }
         return when {
-
             digitsOnly.startsWith("09") && digitsOnly.length == 11 -> "+63" + digitsOnly.substring(1)
-
             number.startsWith("+639") && number.length == 13 -> number
-
             else -> ""
         }
     }
@@ -96,9 +108,8 @@ class registration : AppCompatActivity() {
     private fun registerUser(
         email: String, name: String, pass: String, confirmPass: String, phone: String, isTermsChecked: Boolean
     ) {
-        // --- Comprehensive validation combining both versions ---
         if (email.isEmpty() || name.isEmpty() || pass.isEmpty() || phone.isEmpty() || confirmPass.isEmpty()) {
-            showToast("Please Fill all the requirements")
+            showToast("All fields are required")
             return
         }
         if (!isTermsChecked) {
@@ -116,7 +127,6 @@ class registration : AppCompatActivity() {
             return
         }
 
-        // --- Firebase Logic (from the "Gatekeeper" version) ---
         auth.createUserWithEmailAndPassword(email, pass)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -132,7 +142,6 @@ class registration : AppCompatActivity() {
 
     private fun saveUserData(user: FirebaseUser, email: String, name: String, phone: String) {
         val userMap = hashMapOf("email" to email, "name" to name, "phone" to phone)
-
         db.collection("users").document(user.uid).set(userMap)
             .addOnSuccessListener {
                 Log.d("Registration", "User data saved successfully.")
@@ -140,7 +149,6 @@ class registration : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Log.e("Registration", "Failed to save user data.", e)
-                // Still proceed to email verification even if DB save fails
                 sendVerificationEmailAndProceed(user)
             }
     }
@@ -150,7 +158,6 @@ class registration : AppCompatActivity() {
         val inviteRef = db.collection("users").document(user.uid)
             .collection("meta").document("inviteCode")
         val codeMap = mapOf("code" to inviteCode)
-
         inviteRef.set(codeMap)
             .addOnSuccessListener {
                 Log.d("Registration", "Invite code '$inviteCode' saved successfully.")
@@ -166,20 +173,20 @@ class registration : AppCompatActivity() {
         user.sendEmailVerification()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    showToast("Registration successful. Please check your email.")
+                    showToast("Registration successful! Welcome!")
                 } else {
                     showToast("Registration successful, but failed to send verification email.")
                 }
-
-                // Navigate to the Email Verification Gatekeeper
-                val intent = Intent(this, VerifyEmailActivity::class.java)
+                val intent = Intent(this, LocationActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
             }
     }
 
-    // --- UI Helper Functions (from your detailed UI version) ---
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
 
     private fun openPdfViewer(fileName: String) {
         val intent = Intent(this, PdfViewerActivity::class.java)
@@ -207,21 +214,6 @@ class registration : AppCompatActivity() {
         textView.text = spannableString
         textView.movementMethod = LinkMovementMethod.getInstance()
         textView.highlightColor = Color.TRANSPARENT
-    }
-
-    private fun setupNameValidation(field: TextInputEditText, layout: TextInputLayout) {
-        field.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                val input = s.toString()
-                if (input.isNotEmpty() && !input.matches("^[a-zA-Z\\s]*$".toRegex())) {
-                    layout.error = "Name can only contain letters and spaces."
-                } else {
-                    layout.error = null
-                }
-            }
-        })
     }
 
     private fun addTextWatcherToClearError(field: TextInputEditText, layout: TextInputLayout) {
@@ -261,9 +253,5 @@ class registration : AppCompatActivity() {
                 layout.error = if (errors.isNotEmpty()) errors.joinToString("\n") else null
             }
         })
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

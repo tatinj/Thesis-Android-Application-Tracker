@@ -24,7 +24,7 @@ class VerifyEmailActivity : AppCompatActivity() {
         val tvResendEmail: TextView = findViewById(R.id.tv_resend_email)
         val tvPrompt: TextView = findViewById(R.id.tv_verification_prompt)
 
-        // Personalize the prompt message with the user's email
+        // CHECKING KUNG NA SEND NG ANG EMAIL VERIFICATION
         val user = auth.currentUser
         if (user != null) {
             tvPrompt.text = "A verification link has been sent to ${user.email}. Please click the link to continue."
@@ -42,16 +42,16 @@ class VerifyEmailActivity : AppCompatActivity() {
     private fun checkVerificationStatus() {
         val user = auth.currentUser
         if (user == null) {
-            // This should not happen, but as a safeguard, send them to login.
+
             startActivity(Intent(this, Login::class.java))
             finish()
             return
         }
 
-        // IMPORTANT: You must reload the user to get the latest status from Firebase servers.
+
         user.reload().addOnCompleteListener { reloadTask ->
             if (reloadTask.isSuccessful) {
-                // After reloading, check the isEmailVerified property again.
+
                 if (user.isEmailVerified) {
                     Toast.makeText(this, "Email verified successfully!", Toast.LENGTH_SHORT).show()
                     // Navigate to the main part of the app.
@@ -82,10 +82,10 @@ class VerifyEmailActivity : AppCompatActivity() {
             }
     }
 
-    // Handle the back press to prevent users from skipping verification
+
     override fun onBackPressed() {
         super.onBackPressed()
-        // When back is pressed, sign the user out and send them to the login screen.
+
         auth.signOut()
         startActivity(Intent(this, Login::class.java))
         finish()

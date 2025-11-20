@@ -81,6 +81,10 @@
             android:exported="false" />
         <!-- =============================================================== -->
 
+        <!-- For Forgot Password Activity -->
+
+        <activity
+            android:name=".ForgotPasswordActivity" />
 
         <!-- 👤 Registration & Login -->
         <activity

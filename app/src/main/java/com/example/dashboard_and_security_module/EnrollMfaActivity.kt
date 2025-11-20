@@ -16,7 +16,7 @@ class EnrollMfaActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private var verificationId: String? = null
 
-    // UI Components
+
     private lateinit var phoneNumberField: EditText
     private lateinit var codeField: EditText
     private lateinit var sendCodeButton: Button
@@ -40,7 +40,7 @@ class EnrollMfaActivity : AppCompatActivity() {
                     Toast.makeText(this, "Invalid phone number format. Please use 09...", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
-                // Pass normalized number to start verification
+
                 startPhoneNumberVerification(normalizedPhone)
             } else {
                 Toast.makeText(this, "Please enter a phone number.", Toast.LENGTH_SHORT).show()
@@ -58,7 +58,7 @@ class EnrollMfaActivity : AppCompatActivity() {
         }
     }
 
-    // KINOCONVERT YUNG PH LOCAL NUMBER INTO +63 YEA YEA
+
     private fun normalizePhoneNumber(number: String): String {
         val digitsOnly = number.filter { it.isDigit() }
         return when {
@@ -66,11 +66,11 @@ class EnrollMfaActivity : AppCompatActivity() {
             digitsOnly.startsWith("9") && digitsOnly.length == 10 -> "+63$digitsOnly"
             number.startsWith("+639") && number.length == 13 -> number
             digitsOnly.startsWith("639") && digitsOnly.length == 12 -> "+$digitsOnly"
-            else -> "" // Return empty for invalid formats
+            else -> ""
         }
     }
 
-    private fun startPhoneNumberVerification(phoneNumber: String) { // NIRERECEIVE YUNG KINONVERT
+    private fun startPhoneNumberVerification(phoneNumber: String) { // NIRERECEIVE YUNG KINONVERT NA NUMBER
         val user = auth.currentUser
         if (user == null) {
             Toast.makeText(this, "You must be logged in to enroll.", Toast.LENGTH_SHORT).show()
@@ -88,7 +88,7 @@ class EnrollMfaActivity : AppCompatActivity() {
                         override fun onCodeSent(sentVerificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                             this@EnrollMfaActivity.verificationId = sentVerificationId
                             Toast.makeText(applicationContext, "Verification code sent.", Toast.LENGTH_SHORT).show()
-                            // Optional: Show the code field now
+
                             codeField.visibility = View.VISIBLE
                             verifyButton.visibility = View.VISIBLE
                         }
@@ -120,7 +120,7 @@ class EnrollMfaActivity : AppCompatActivity() {
             ?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this, "2FA enabled successfully!", Toast.LENGTH_SHORT).show()
-                    finish() // Close the enrollment activity
+                    finish()
                 } else {
                     Log.w("EnrollMFA", "Failed to enroll 2FA", task.exception)
                     Toast.makeText(this, "Failed to enable 2FA: ${task.exception?.message}", Toast.LENGTH_LONG).show()
