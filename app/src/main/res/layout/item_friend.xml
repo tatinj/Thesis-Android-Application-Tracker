@@ -27,6 +27,14 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tv_friend_battery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Battery: 100%"
+            android:textColor="#555555"
+            android:textSize="14sp" />
+
+        <TextView
             android:id="@+id/tv_friend_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
