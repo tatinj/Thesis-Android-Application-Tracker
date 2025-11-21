@@ -1,72 +1,111 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_green_600">
+    android:background="#FFFFFF">
 
     <LinearLayout
+        android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_height="80dp"
         android:layout_alignParentBottom="true"
-        android:padding="10dp"
+        android:background="#FFFFFF"
+        android:elevation="10dp"
         android:gravity="center"
-        android:background="@color/green_700">
+        android:orientation="horizontal"
+        android:padding="8dp">
 
-        <ImageView
-            android:id="@+id/friend_section"
+        <!-- FRIEND -->
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/users_group_members_team_icon_226574"
-            android:contentDescription="Friend"
-            android:padding="12dp"
-            android:background="@drawable/rounded_button"
             android:gravity="center"
-            android:clickable="true"
-            android:elevation="4dp"
-            android:layout_marginRight="8dp"/>
+            android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/location_section"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_weight="1"
-            android:src="@drawable/direction_gps_location_map_maps_navigation_pin_icon_123206"
-            android:contentDescription="Friend"
-            android:padding="12dp"
-            android:background="@drawable/rounded_button"
-            android:gravity="center"
-            android:clickable="true"
-            android:elevation="4dp"
-            android:layout_marginRight="8dp" />
+            <ImageView
+                android:id="@+id/friend_section"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/users_group_members_team_icon_226574" />
 
-        <ImageView
-            android:id="@+id/safety_section"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_weight="1"
-            android:src="@drawable/provensafety_5137"
-            android:contentDescription="Friend"
-            android:padding="12dp"
-            android:background="@drawable/rounded_button"
-            android:gravity="center"
-            android:clickable="true"
-            android:elevation="4dp"
-            android:layout_marginRight="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="Family"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
 
-        <ImageView
-            android:id="@+id/profile_section"
+        <!-- LOCATION -->
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/user_person_profile_avatar_icon_190943"
-            android:contentDescription="Friend"
-            android:padding="12dp"
-            android:background="@drawable/rounded_button"
             android:gravity="center"
-            android:clickable="true"
-            android:elevation="4dp"
-            android:layout_marginRight="8dp" />
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/location_section"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/direction_gps_location_map_maps_navigation_pin_icon_123206" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="Location"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- SAFETY -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/safety_section"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/provensafety_5137" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="Safety"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- PROFILE -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/profile_section"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/user_person_profile_avatar_icon_190943" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="Profile"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
 
     </LinearLayout>
+
 </RelativeLayout>

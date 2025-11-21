@@ -25,14 +25,14 @@
         android:layout_marginBottom="16dp"/>
 
     <!-- Phone Number Input -->
-    <EditText
-        android:id="@+id/phone_number_field"
+    <EditText    android:id="@+id/phone_number_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Phone number with country code"
         android:inputType="phone"
         android:minHeight="48dp"
-        android_layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"/>
+
 
     <!-- Send Code Button -->
     <Button

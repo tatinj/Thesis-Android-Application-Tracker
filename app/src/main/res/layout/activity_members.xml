@@ -1,10 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E8F5E9">
+    android:background="#FFFFFF">
 
-    <!-- TextView to display one-time unique code -->
-    <!-- TextView to display the unique code -->
+    <!-- Unique Code Text -->
     <TextView
         android:id="@+id/tv_unique_code"
         android:layout_width="match_parent"
@@ -13,29 +12,27 @@
         android:layout_marginTop="40dp"
         android:layout_marginRight="16dp"
         android:gravity="center"
-        android:text="Your Code:"
-        android:textColor="@color/green_600"
+        android:text="Your Invitation Code:"
+        android:textColor="#674FA3"
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <!-- EditText to input friend's code -->
+    <!-- Input Code -->
     <EditText
         android:id="@+id/et_friend_code"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_unique_code"
         android:layout_margin="16dp"
-        android:background="@color/green_800"
+        android:background="#806DBC"
         android:gravity="center"
-        android:hint="Enter family's code"
+        android:hint="Enter family member's code"
         android:padding="16dp"
-        android:textColor="@color/white"
-        android:textColorHint="@color/white"
+        android:textColor="#FDFDFD"
+        android:textColorHint="#FDFDFD"
         android:textSize="16sp" />
 
-    <!-- Button to add a friend by code -->
-
-    <!-- RecyclerView to show list of friends with 'Add Friend' button beside each member -->
+    <!-- Add Family Button -->
     <Button
         android:id="@+id/btn_add_friend"
         android:layout_width="match_parent"
@@ -52,84 +49,119 @@
         android:textColor="@color/white"
         android:textSize="18sp" />
 
+    <!-- Friends List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_friends"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_below="@id/btn_add_friend"
         android:layout_margin="16dp"
-        android:background="@drawable/rounded_button"
+        android:background="#F1EBFB"
         android:padding="8dp" />
-    <!-- Bottom Navigation Bar -->
+
+    <!-- Bottom Navigation (Updated With Text Under Icons) -->
     <LinearLayout
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/green_700"
+        android:background="#FFFFFF"
+        android:elevation="10dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:padding="8dp">
 
-        <!-- Friend Section Icon -->
-        <ImageView
-            android:id="@+id/friend_section"
+        <!-- FRIEND -->
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_marginRight="8dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/rounded_button"
-            android:clickable="true"
-            android:contentDescription="Friend"
-            android:elevation="4dp"
             android:gravity="center"
-            android:padding="12dp"
-            android:src="@drawable/users_group_members_team_icon_226574" />
+            android:orientation="vertical">
 
-        <!-- Location Section Icon -->
-        <ImageView
-            android:id="@+id/location_section"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/rounded_button"
-            android:clickable="true"
-            android:contentDescription="Location"
-            android:elevation="4dp"
-            android:gravity="center"
-            android:padding="12dp"
-            android:src="@drawable/direction_gps_location_map_maps_navigation_pin_icon_123206" />
+            <ImageView
+                android:id="@+id/friend_section"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/users_group_members_team_icon_226574" />
 
-        <!-- Safety Section Icon -->
-        <ImageView
-            android:id="@+id/safety_section"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/rounded_button"
-            android:clickable="true"
-            android:contentDescription="Safety"
-            android:elevation="4dp"
-            android:gravity="center"
-            android:padding="12dp"
-            android:src="@drawable/provensafety_5137" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="Family"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
 
-        <!-- Profile Section Icon -->
-        <ImageView
-            android:id="@+id/profile_section"
+        <!-- LOCATION -->
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_marginRight="8dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/rounded_button"
-            android:clickable="true"
-            android:contentDescription="Profile"
-            android:elevation="4dp"
             android:gravity="center"
-            android:padding="12dp"
-            android:src="@drawable/user_person_profile_avatar_icon_190943" />
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/location_section"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/direction_gps_location_map_maps_navigation_pin_icon_123206" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="Location"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- SAFETY -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/safety_section"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/provensafety_5137" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="Safety"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- PROFILE -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/profile_section"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/user_person_profile_avatar_icon_190943" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:text="Profile"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
 
     </LinearLayout>
 

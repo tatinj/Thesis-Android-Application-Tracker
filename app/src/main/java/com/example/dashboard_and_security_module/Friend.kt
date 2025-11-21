@@ -6,5 +6,6 @@ data class Friend(
     val phone: String = "",
     val latitude: Double? = null,
     val longitude: Double? = null,
-    val batteryPercentage: Int? = null
+    val batteryPercentage: Int? = null,
+    val uid: String = ""    // Added UID for Firestore reference
 )

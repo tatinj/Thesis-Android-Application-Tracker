@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_friends"
+        android:icon="@drawable/users_group_members_team_icon_226574"
+        android:title="Friends" />
+
+    <item
+        android:id="@+id/navigation_location"
+        android:icon="@drawable/direction_gps_location_map_maps_navigation_pin_icon_123206"
+        android:title="Location" />
+
+    <item
+        android:id="@+id/navigation_safety"
+        android:icon="@drawable/provensafety_5137"
+        android:title="Safety" />
+
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/user_person_profile_avatar_icon_190943"
+        android:title="Profile" />
+
+</menu>

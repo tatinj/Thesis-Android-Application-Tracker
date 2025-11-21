@@ -71,4 +71,6 @@ dependencies {
 
     // Zoom gradle
     implementation("com.github.chrisbanes:PhotoView:2.3.0")
+    // WORKER
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }

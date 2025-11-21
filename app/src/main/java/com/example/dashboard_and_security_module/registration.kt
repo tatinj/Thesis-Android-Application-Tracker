@@ -34,7 +34,7 @@ class registration : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // --- View Initialization (from your detailed version) ---
+        // --- View Initialization ---
         val nameField: TextInputEditText = findViewById(R.id.name)
         val emailField: TextInputEditText = findViewById(R.id.email)
         val passwordField: TextInputEditText = findViewById(R.id.password)
@@ -50,11 +50,8 @@ class registration : AppCompatActivity() {
         val btnSignUp: Button = findViewById(R.id.btn_sign_up)
         val tvLogin: TextView = findViewById(R.id.tv_login)
 
-        // --- Setup for Clickable "Terms and Privacy Policy" Text ---
         setupClickableTermsText(tvTermsAndPolicy)
-
-        // --- DATA Validation Listeners ---
-        setupNameValidation(nameField, nameLayout) // This function is now updated
+        setupNameValidation(nameField, nameLayout)
         addTextWatcherToClearError(emailField, emailLayout)
         addTextWatcherToClearError(passwordField, passwordLayout)
         addTextWatcherToClearError(confirmPasswordField, confirmPasswordLayout)
@@ -62,7 +59,11 @@ class registration : AppCompatActivity() {
         setupPhoneNumberValidation(phoneNumberField, contactNumberLayout)
         setupPasswordValidation(passwordField, passwordLayout)
 
-        // --- Button Click Listeners ---
+        // --- THIS IS THE KEY CHANGE ---
+        // Add a filter to the email field to automatically remove spaces.
+        setupNoSpacesFilter(emailField)
+        // --- END OF KEY CHANGE ---
+
         btnSignUp.setOnClickListener {
             val email = emailField.text.toString().trim()
             val name = nameField.text.toString().trim()
@@ -77,25 +78,45 @@ class registration : AppCompatActivity() {
         }
     }
 
-    // DATA VALIDATION SA FULL NAME
-    private fun setupNameValidation(field: TextInputEditText, layout: TextInputLayout) {
+    // --- START: NEW HELPER FUNCTION ---
+    /**
+     * Adds a TextWatcher to a TextInputEditText to prevent the user from entering spaces.
+     * It automatically removes any spaces they type.
+     */
+    private fun setupNoSpacesFilter(field: TextInputEditText) {
         field.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
             override fun afterTextChanged(s: Editable?) {
-                val input = s.toString()
-                // The new regex now allows letters, spaces, hyphens, and periods.
-                if (input.isNotEmpty() && !input.matches("^[a-zA-Z.\\-\\s]*$".toRegex())) {
-                    layout.error = "Name can only contain letters, spaces, '.', and '-'"
-                } else {
-                    layout.error = null
+                val text = s.toString()
+                if (text.contains(" ")) {
+                    val filteredText = text.replace(" ", "")
+                    field.setText(filteredText)
+                    // Move the cursor to the end of the filtered text
+                    field.setSelection(filteredText.length)
                 }
             }
         })
     }
-    // --- END OF KEY CHANGE ---
+    // --- END: NEW HELPER FUNCTION ---
 
-    // --- All your other functions (normalizePhoneNumber, registerUser, etc.) are perfect and remain the same ---
+    private fun sendVerificationEmailAndProceed(user: FirebaseUser) {
+        user.sendEmailVerification()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    showToast("Registration successful. Please check your email.")
+                } else {
+                    showToast("Registration successful, but failed to send verification email.")
+                }
+                val intent = Intent(this, VerifyEmailActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+    }
+
+    // --- All your other functions (normalizePhoneNumber, registerUser, etc.) are PERFECT and remain the same ---
     private fun normalizePhoneNumber(number: String): String {
         val digitsOnly = number.filter { it.isDigit() }
         return when {
@@ -120,13 +141,11 @@ class registration : AppCompatActivity() {
             showToast("Passwords do not match")
             return
         }
-
         val normalizedPhone = normalizePhoneNumber(phone)
         if (normalizedPhone.isEmpty()) {
             showToast("Invalid phone number format. Please use 11 digits starting with 09.")
             return
         }
-
         auth.createUserWithEmailAndPassword(email, pass)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -169,21 +188,6 @@ class registration : AppCompatActivity() {
             }
     }
 
-    private fun sendVerificationEmailAndProceed(user: FirebaseUser) {
-        user.sendEmailVerification()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    showToast("Registration successful! Welcome!")
-                } else {
-                    showToast("Registration successful, but failed to send verification email.")
-                }
-                val intent = Intent(this, LocationActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            }
-    }
-
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
@@ -214,6 +218,21 @@ class registration : AppCompatActivity() {
         textView.text = spannableString
         textView.movementMethod = LinkMovementMethod.getInstance()
         textView.highlightColor = Color.TRANSPARENT
+    }
+
+    private fun setupNameValidation(field: TextInputEditText, layout: TextInputLayout) {
+        field.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val input = s.toString()
+                if (input.isNotEmpty() && !input.matches("^[a-zA-Z.\\-\\s]*$".toRegex())) {
+                    layout.error = "Name can only contain letters, spaces, '.', and '-'"
+                } else {
+                    layout.error = null
+                }
+            }
+        })
     }
 
     private fun addTextWatcherToClearError(field: TextInputEditText, layout: TextInputLayout) {
