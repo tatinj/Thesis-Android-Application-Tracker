@@ -103,8 +103,10 @@
             android:clickable="true"
             android:focusable="true"
             android:text="Forgot Password?"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold|italic" />
 
         <!-- Register Link -->
         <TextView
@@ -115,8 +117,9 @@
             android:clickable="true"
             android:focusable="true"
             android:text="Don't have an account? Sign up"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold|italic" />
 
         <TextView
             android:layout_width="wrap_content"
