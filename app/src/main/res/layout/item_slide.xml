@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!--
+        THIS IS THE FIX for minimizing the pictures.
+        The padding creates space around the ImageView.
+    -->
+    <ImageView
+        android:id="@+id/slide_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:padding="32dp"
+        android:contentDescription="Tutorial Slide"
+        android:scaleType="fitCenter" />
+
+</FrameLayout>

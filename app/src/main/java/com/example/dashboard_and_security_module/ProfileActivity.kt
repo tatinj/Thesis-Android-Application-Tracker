@@ -14,6 +14,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -21,6 +22,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var db: FirebaseFirestore // For fetching the user's name
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,14 +30,22 @@ class ProfileActivity : AppCompatActivity() {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_profile)
 
-        // Retrieve the user_name from the Intent
-        val userName = intent.getStringExtra("user_name") ?: "User"
-
-        // Set the username to the TextView
-        val tvProfileName: TextView = findViewById(R.id.tv_profile_name)
-        tvProfileName.text = userName
-
+        // Initialize Firebase
         auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
+
+        // Initialize UI Components
+        val tvProfileName: TextView = findViewById(R.id.tv_profile_name)
+        val btnSettings: Button = findViewById(R.id.btn_settings)
+        val friendSection: ImageView = findViewById(R.id.friend_section)
+        val locationSection: ImageView = findViewById(R.id.location_section)
+        val safetySection: ImageView = findViewById(R.id.safety_section)
+        val btnLogout: Button = findViewById(R.id.btn_log_out)
+        val tvDate: TextView = findViewById(R.id.tv_date)
+        val tvTime: TextView = findViewById(R.id.tv_time)
+
+        // Load the user's name from Firestore
+        loadUserProfile(tvProfileName)
 
         // Configure Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -45,19 +55,11 @@ class ProfileActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        // --- New code for the Settings Button ---
-        val btnSettings: Button = findViewById(R.id.btn_settings)
+        // Set up listeners
         btnSettings.setOnClickListener {
-            // Create an Intent to start SettingsActivity
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
-        // --- End of new code ---
-
-        // Section buttons
-        val friendSection: ImageView = findViewById(R.id.friend_section)
-        val locationSection: ImageView = findViewById(R.id.location_section)
-        val safetySection: ImageView = findViewById(R.id.safety_section)
 
         friendSection.setOnClickListener {
             val intent = Intent(this, MembersActivity::class.java)
@@ -74,22 +76,48 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Logout button
-        val btnLogout: Button = findViewById(R.id.btn_log_out)
         btnLogout.setOnClickListener {
             signOut()
         }
 
         // Display date and time
-        val tvDate: TextView = findViewById(R.id.tv_date)
-        val tvTime: TextView = findViewById(R.id.tv_time)
-
         val dateFormat = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.getDefault())
         val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
-
         val currentDate = Date()
         tvDate.text = dateFormat.format(currentDate)
         tvTime.text = timeFormat.format(currentDate)
+    }
+
+    /**
+     * Fetches the user's data from Firestore and updates the UI.
+     */
+    private fun loadUserProfile(tvProfileName: TextView) {
+        val user = auth.currentUser
+        if (user == null) {
+            // This should not happen if the user is on this screen, but as a safeguard:
+            Toast.makeText(this, "Not logged in!", Toast.LENGTH_SHORT).show()
+            signOut() // Sign out to be safe
+            return
+        }
+
+        // Use the user's UID to get their document from the "users" collection
+        db.collection("users").document(user.uid).get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    // Get the "name" field from the document
+                    val name = document.getString("name") ?: "User"
+                    // Set the TextView's text to the user's real name
+                    tvProfileName.text = name
+                } else {
+                    // If document doesn't exist, use the display name from the auth object as a fallback
+                    tvProfileName.text = user.displayName ?: "User"
+                }
+            }
+            .addOnFailureListener {
+                // If there's an error fetching the data, use the display name as a fallback
+                Toast.makeText(this, "Failed to load profile name.", Toast.LENGTH_SHORT).show()
+                tvProfileName.text = user.displayName ?: "User"
+            }
     }
 
     /** 🚪 Sign out of Firebase & Google, then stop all ongoing notifications */

@@ -52,6 +52,8 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
+
+
     // --- START: CORRECTED GOOGLE PLAY SERVICES DEPENDENCIES ---
     // Use the aliases defined in your libs.versions.toml file
     implementation(libs.play.services.auth)
@@ -68,7 +70,8 @@ dependencies {
 
     // ✅ Gson for JSON serialization/deserialization
     implementation(libs.gson)
-
+    // SLIDESHOW
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
     // Zoom gradle
     implementation("com.github.chrisbanes:PhotoView:2.3.0")
     // WORKER

@@ -81,6 +81,10 @@
             android:exported="false" />
         <!-- =============================================================== -->
 
+        <!-- SlideShow Activity -->
+        <activity android:name=".SlideshowActivity"
+                  android:theme="@style/Theme.AppCompat.NoActionBar" />
+
         <!-- For Forgot Password Activity -->
 
         <activity

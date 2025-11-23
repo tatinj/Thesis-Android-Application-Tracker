@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Window
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -88,6 +89,14 @@ class LocationActivity : AppCompatActivity() {
         val friendLat = intent.getDoubleExtra("friend_lat", Double.NaN)
         val friendLon = intent.getDoubleExtra("friend_lon", Double.NaN)
         val friendName = intent.getStringExtra("friend_name") ?: "Friend"
+        val tutorialButton: ImageButton = findViewById(R.id.btn_tutorial) // Find the new button
+
+        tutorialButton.setOnClickListener {
+            // Start the SlideshowActivity
+            startActivity(Intent(this, SlideshowActivity::class.java))
+        }
+
+        // ... rest of your onCreate method ...
 
         if (!friendLat.isNaN() && !friendLon.isNaN()) {
             mapLocked = true
@@ -101,6 +110,8 @@ class LocationActivity : AppCompatActivity() {
             startUserLocationUpdates()
         }
     }
+
+
 
     private fun setupMapView() {
         mapView = findViewById(R.id.map)
@@ -357,6 +368,7 @@ class LocationActivity : AppCompatActivity() {
             startActivity(Intent(this, ProfileActivity::class.java))
         }
     }
+
 
     override fun onResume() { super.onResume(); mapView.onResume() }
     override fun onPause() { super.onPause(); mapView.onPause() }

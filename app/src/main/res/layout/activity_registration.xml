@@ -192,9 +192,10 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:text="Already have an account? Login"
+                android:textAllCaps="false"
                 android:textColor="#1E1E1E"
                 android:textSize="15sp"
-                android:textStyle="bold" />
+                android:textStyle="bold|italic" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

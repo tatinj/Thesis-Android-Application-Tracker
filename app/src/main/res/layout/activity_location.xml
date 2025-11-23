@@ -25,6 +25,35 @@
         android:layout_below="@id/friend_info_tv"
         android:layout_above="@id/bottom_nav" />
 
+    <!-- TUTORIAL ICON -->
+    <ImageButton
+        android:id="@+id/btn_tutorial"
+        android:layout_width="66dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/friend_info_tv"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Open Tutorial"
+        android:src="@drawable/ic_help"
+        app:tint="?attr/colorPrimary" />
+
+    <!-- TUTORIAL TEXT BELOW ICON -->
+    <TextView
+        android:id="@+id/tutorial_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_tutorial"
+        android:layout_alignEnd="@id/btn_tutorial"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="14dp"
+        android:text="Tutorial"
+        android:textColor="#674FA3"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+
     <!-- BOTTOM NAVIGATION -->
     <LinearLayout
         android:id="@+id/bottom_nav"
