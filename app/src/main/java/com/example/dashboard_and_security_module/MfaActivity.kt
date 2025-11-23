@@ -27,6 +27,7 @@ class MfaActivity : AppCompatActivity() {
     private lateinit var verifyButton: Button
     private lateinit var resendCodeTextView: TextView
     private lateinit var resendTimerTextView: TextView
+    private lateinit var phoneNumberHintTextView: TextView // For displaying the masked number
 
     // Firebase and state
     private lateinit var resolver: MultiFactorResolver
@@ -45,6 +46,7 @@ class MfaActivity : AppCompatActivity() {
         verifyButton = findViewById(R.id.verify_button)
         resendCodeTextView = findViewById(R.id.tv_resend_code)
         resendTimerTextView = findViewById(R.id.tv_resend_timer)
+        phoneNumberHintTextView = findViewById(R.id.tv_phone_number_hint) // Initialize the new TextView
 
         resolver = mfaResolver
             ?: run {
@@ -59,6 +61,9 @@ class MfaActivity : AppCompatActivity() {
                 finish()
                 return
             }
+
+        // Display the masked phone number to the user
+        phoneNumberHintTextView.text = "Sent to: ${phoneInfo.phoneNumber}"
 
         // --- Automatically send the initial code ---
         sendVerificationCode(phoneInfo)
@@ -79,10 +84,10 @@ class MfaActivity : AppCompatActivity() {
                 override fun onCodeSent(sentVerificationId: String, forceResendingToken: PhoneAuthProvider.ForceResendingToken) {
                     Log.d("MfaActivity", "Verification code sent successfully.")
                     this@MfaActivity.verificationId = sentVerificationId
-                    this@MfaActivity.resendToken = forceResendingToken // <-- Store the token for resending
+                    this@MfaActivity.resendToken = forceResendingToken // Store the token for resending
                     Toast.makeText(applicationContext, "Verification code sent.", Toast.LENGTH_SHORT).show()
 
-                    startResendTimer() // <-- Start the countdown
+                    startResendTimer() // Start the countdown
 
                     // We set the listener here, after we know the code has been sent.
                     verifyButton.setOnClickListener {
@@ -109,7 +114,7 @@ class MfaActivity : AppCompatActivity() {
                 }
             })
 
-
+        // If we have a resend token, add it to the options
         if (token != null) {
             optionsBuilder.setForceResendingToken(token)
         }
@@ -130,7 +135,7 @@ class MfaActivity : AppCompatActivity() {
         resendCodeTextView.visibility = View.GONE
         resendTimerTextView.visibility = View.VISIBLE
 
-        countdownTimer?.cancel()
+        countdownTimer?.cancel() // Cancel any existing timer
 
         countdownTimer = object : CountDownTimer(60000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -170,6 +175,6 @@ class MfaActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mfaResolver = null
-        countdownTimer?.cancel()
+        countdownTimer?.cancel() // Prevent memory leaks
     }
 }

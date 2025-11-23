@@ -22,10 +22,21 @@
         android:id="@+id/tv_mfa_prompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
         android:gravity="center"
         android:text="A verification code has been sent to your registered phone number."
         android:textSize="16sp" />
+
+    <!-- START: THIS IS THE NEW TEXTVIEW -->
+    <TextView
+        android:id="@+id/tv_phone_number_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="24dp"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        tools:text="Sent to: *******6789" />
+    <!-- END: NEW TEXTVIEW -->
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/sms_code_layout"
