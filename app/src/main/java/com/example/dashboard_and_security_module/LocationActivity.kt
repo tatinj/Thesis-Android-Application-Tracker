@@ -96,7 +96,7 @@ class LocationActivity : AppCompatActivity() {
             startActivity(Intent(this, SlideshowActivity::class.java))
         }
 
-        // ... rest of your onCreate method ...
+
 
         if (!friendLat.isNaN() && !friendLon.isNaN()) {
             mapLocked = true

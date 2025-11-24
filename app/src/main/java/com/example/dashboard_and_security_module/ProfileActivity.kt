@@ -88,9 +88,7 @@ class ProfileActivity : AppCompatActivity() {
         tvTime.text = timeFormat.format(currentDate)
     }
 
-    /**
-     * Fetches the user's data from Firestore and updates the UI.
-     */
+
     private fun loadUserProfile(tvProfileName: TextView) {
         val user = auth.currentUser
         if (user == null) {

@@ -34,7 +34,7 @@ class EnrollMfaActivity : AppCompatActivity() {
         sendCodeButton.setOnClickListener {
             val phoneNumber = phoneNumberField.text.toString().trim()
             if (phoneNumber.isNotBlank()) {
-                // --- KEY CHANGE: NORMALIZE THE NUMBER ---
+
                 val normalizedPhone = normalizePhoneNumber(phoneNumber)
                 if (normalizedPhone.isEmpty()) {
                     Toast.makeText(this, "Invalid phone number format. Please use 09...", Toast.LENGTH_LONG).show()

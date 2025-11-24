@@ -19,7 +19,7 @@ class SlideshowActivity : AppCompatActivity() {
 
         val closeButton: ImageButton = findViewById(R.id.btn_close)
 
-        // IMPORTANT: Make sure you have these images in your res/drawable folder
+
         val tutorialImages = listOf(
             R.drawable.slide1,
             R.drawable.slide2,
@@ -35,7 +35,7 @@ class SlideshowActivity : AppCompatActivity() {
             R.drawable.slide12,
             R.drawable.slide13,
 
-            // Add as many as you need
+
         )
 
         val adapter = SlideshowAdapter(tutorialImages)

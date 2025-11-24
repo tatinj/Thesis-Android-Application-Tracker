@@ -72,11 +72,8 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    // --- START: NEW MASKING FUNCTIONS ---
-    /**
-     * Masks an email address.
-     * Example: "sinag.user@example.com" becomes "s...r@example.com"
-     */
+
+
     private fun maskEmail(email: String): String {
         val atIndex = email.indexOf('@')
         if (atIndex <= 2) {
